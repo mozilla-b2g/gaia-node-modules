@@ -2,8 +2,8 @@
   "name": "gaia",
   "private": true,
   "version": "0.0.2",
-  "description": "A bundle of components which Gaia needs in order to leverage marionette-js-runner",
-  "author": "Gareth Aye <gaye@mozilla.com>",
+  "description": "A bundle of components which Gaia needs.",
+  "author": "The Gaia Team <dev-gaia@lists.mozilla.org>",
   "devDependencies": {
     "async": "0.2.9",
     "adm-zip": "0.4.3",
