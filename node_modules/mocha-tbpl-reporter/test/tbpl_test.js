@@ -46,11 +46,10 @@ suite('TBPL', function() {
       fullTitle: function() {
         return 'some title';
       }
-    }, new Error('ruhroh'));
+    });
 
     assert.strictEqual(subject.failing, failing + 1);
     assert.ok(log.calledWith('TEST-UNEXPECTED-FAIL | %s', 'some title'));
-    assert.ok(log.calledWith('ruhroh'));
   });
 
   test('#onPass', function() {
