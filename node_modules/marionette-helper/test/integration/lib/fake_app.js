@@ -9,11 +9,37 @@ function FakeApp(client, origin) {
 
 FakeApp.Selector = Object.freeze({
   selectElement: '#select',
-  selectedOptionElement: '#select option:checked'
+  selectedOptionElement: '#select option:checked',
+  inputElement: '#input',
+  inputDateElement: '#input-date',
+  inputTimeElement: '#input-time',
+  inputDatetimeElement: '#input-datetime',
+  inputDatetimeLocalElement: '#input-datetime-local'
 });
 
 FakeApp.prototype = {
   client: null,
+
+  get inputElementValue() {
+    return this.client.findElement(
+      FakeApp.Selector['inputElement']).getAttribute('value');
+  },
+  get inputDateElementValue() {
+    return this.client.findElement(
+      FakeApp.Selector['inputDateElement']).getAttribute('value');
+  },
+  get inputTimeElementValue() {
+    return this.client.findElement(
+      FakeApp.Selector['inputTimeElement']).getAttribute('value');
+  },
+  get inputDatetimeElementValue() {
+    return this.client.findElement(
+      FakeApp.Selector['inputDatetimeElement']).getAttribute('value');
+  },
+  get inputDatetimeLocalElementValue() {
+    return this.client.findElement(
+      FakeApp.Selector['inputDatetimeLocalElement']).getAttribute('value');
+  },
   get selectElement() {
     return this.client.findElement(FakeApp.Selector.selectElement);
   },
