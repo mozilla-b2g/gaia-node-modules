@@ -67,7 +67,7 @@ TBPL.prototype = {
    */
   onFail: function(test, err) {
     var title = this.getTitle(test);
-    console.log('TEST-UNEXPECTED-FAIL | %s', title);
+    console.log('TEST-UNEXPECTED-FAIL | %s | %s', test.file, title);
     this.failing += 1;
   },
 
