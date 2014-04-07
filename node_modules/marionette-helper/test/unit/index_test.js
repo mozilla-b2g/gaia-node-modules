@@ -16,11 +16,23 @@ suite('MarionetteHelper', function() {
     }, 2500); // In the stead of using the BootWatcher.
   });
 
-  test('#wait', function() {
-    var before = new Date().getTime();
-    subject.wait(1000);
-    var after = new Date().getTime();
-    assert.ok(after - before >= 1000);
+  suite('#wait', function() {
+    test('basic operation', function() {
+      var before = new Date().getTime();
+      subject.wait(1000);
+      var after = new Date().getTime();
+      assert.ok(after - before >= 1000);
+    });
+
+    test('durations longer than current `scriptTimeout`', function() {
+      client.setScriptTimeout(23);
+      subject.wait(300);
+      assert.equal(
+        client.scriptTimeout,
+        23,
+        'scriptTimeout value is not modified'
+      );
+    });
   });
 
   test('#waitFor', function(done) {
