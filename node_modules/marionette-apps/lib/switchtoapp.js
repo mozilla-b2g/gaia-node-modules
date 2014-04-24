@@ -27,7 +27,8 @@ function switchToApp(apps, origin, entrypoint, callback) {
         return callback(err);
       }
 
-      return client.switchToFrame(iframe, function(err) {
+      // By default, should set focus to the frame.
+      return client.switchToFrame(iframe, {focus: true}, function(err) {
         return callback(err, iframe, app);
       });
     });
