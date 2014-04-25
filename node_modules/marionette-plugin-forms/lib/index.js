@@ -26,6 +26,14 @@ Forms.prototype.fill = function(elem, value, done) {
 
 function setValue(elem, value, done) {
   elem.getAttribute('type', function(err, type) {
+    if (err) {
+      if (done) {
+        done(err);
+      } else {
+        throw err;
+      }
+      return;
+    }
 
     type = type.trim().toLowerCase();
 
