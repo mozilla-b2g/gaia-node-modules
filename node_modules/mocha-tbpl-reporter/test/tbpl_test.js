@@ -42,14 +42,20 @@ suite('TBPL', function() {
 
   test('#onFail', function() {
     var failing = subject.failing;
+    var file = 'doge_such_broke_test.js';
     subject.onFail({
+      file: file,
       fullTitle: function() {
         return 'some title';
       }
     });
 
     assert.strictEqual(subject.failing, failing + 1);
-    assert.ok(log.calledWith('TEST-UNEXPECTED-FAIL | %s', 'some title'));
+    assert.ok(log.calledWith(
+      'TEST-UNEXPECTED-FAIL | %s | %s',
+      file,
+      'some title'
+    ));
   });
 
   test('#onPass', function() {
