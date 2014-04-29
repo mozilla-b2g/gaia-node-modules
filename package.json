@@ -35,7 +35,7 @@
     "mocha-gaia": "1.18.x",
     "mocha-json-proxy": "~0.0.7",
     "mocha-parallel": "0.1.0",
-    "mocha-tbpl-reporter": "0.0.7",
+    "mocha-tbpl-reporter": ">=0.1.1",
     "moment": "~2.4.0",
     "mozilla-download": "~0.4.1-alpha",
     "proxyquire": "~0.4",
