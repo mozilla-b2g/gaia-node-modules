@@ -4,14 +4,6 @@ var getApp = require('./getapp').getApp;
 var url = require('url');
 var fsPath = require('path');
 
-
-/**
- * Origin for the homescreen app.
- * TODO: pull this from settings rather than hardcode.
- * @const {string}
- */
-var HOMESCREEN_ORIGIN = 'homescreen.gaiamobile.org';
-
 /**
  * Launch an application based on its origin and optionally entrypoint.
  * Will wait until app's iframe is visible before firing callback.
@@ -33,8 +25,20 @@ function launch(apps, origin, entrypoint, callback) {
 
   callback = callback || apps._client.defaultCallback;
 
-  // wait for homescreen before launching
-  waitForApp(apps, HOMESCREEN_ORIGIN);
+  // Wait for Homescreen app is rendered.
+  var client = apps._client.scope({ searchTimeout: 10000 });
+  client.waitFor(function() {
+    var el = client.findElement('iframe[src*="homescreen.gaiamobile.org"]');
+    var frameClass = el.scriptWith(function(el) {
+      return el.parentNode.getAttribute('class');
+    });
+
+    if (frameClass !== null) {
+      return frameClass.indexOf('render') !== -1;
+    } else {
+      return el.displayed();
+    }
+  });
 
   // launch the given app
   return getApp(apps, origin, entrypoint, function(err, app) {
