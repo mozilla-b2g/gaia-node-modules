@@ -50,7 +50,8 @@ function getOpts() {
     ProfileBuilder: ProfileBuilder,
     Reporter: Reporter,
     profileBase: profileBase,
-    verbose: verbose
+    verbose: verbose,
+    runtime: program.runtime
   };
 }
 
@@ -104,6 +105,7 @@ function main() {
     .option('--profile-base [json or js file]',
             'default profile options to use in all tests.')
     .option('--profile-builder [builder]', 'profile generation module')
+    .option('--runtime [path]', 'path to a custom binary to excute tests on')
 
     // The following arguments have been copied directly from from mocha.js. This
     // enables marionette-mocha to:
