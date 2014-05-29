@@ -3,12 +3,10 @@
  */
 var SEARCH_TIMEOUT = 10000;
 
-
 /**
  * @const {number}
  */
 var WAIT_BETWEEN_CHECKS = 250;
-
 
 /**
  * Wait until the app is visible.
@@ -22,7 +20,7 @@ function waitForApp(apps, source, callback) {
   if (client.isSync) {
     waitForAppSync(client, source, callback);
   } else {
-    waitForAppAsync(client, source, callback);
+    throw Error('No longer support async driver. Please use sync driver.');
   }
 }
 
@@ -34,42 +32,35 @@ function waitForApp(apps, source, callback) {
  * @param {Function} callback [Err error, Marionette.Element el].
  */
 function waitForAppSync(client, source, callback) {
-  var selector = 'iframe[src*="' + source + '"]';
+  var el = client.findElement('iframe[src*="' + source + '"]');
 
-  // find iframe
-  var el = client.findElement(selector);
+  // Wait for the iframe is rendered.
   client.waitFor(function() {
-    return el.displayed;
+    var frameClass = el.scriptWith(function(el) {
+      return el.parentNode.getAttribute('class');
+    });
+
+    if (frameClass !== null) {
+      return frameClass.indexOf('render') !== -1;
+    } else {
+      return true;
+    }
+  });
+
+  // Wait for the iframe is displayed on screen.
+  client.waitFor(function() {
+    var transitionState = el.scriptWith(function(el) {
+      return el.parentNode.getAttribute('transition-state');
+    });
+
+    if (transitionState !== null) {
+      return transitionState === 'opened';
+    } else {
+      return el.displayed();
+    }
   });
 
   callback && callback(null, el);
 }
-
-
-/**
- * Wait until the app is visible using an async driver.
- * @param {Marionette.Client} client with async driver.
- * @param {String} source to wait for.
- * @param {Function} callback [Err error, Marionette.Element el].
- */
-function waitForAppAsync(client, source, callback) {
-  var selector = 'iframe[src*="' + source + '"]';
-
-  // find iframe
-  client.findElement(selector, function(err, element) {
-    if (err) {
-      return callback && callback(err);
-    }
-
-    function displayed(done) {
-      element.displayed(done);
-    }
-
-    client.waitFor(displayed, function(err) {
-      callback && callback(err, element);
-    });
-  });
-}
-
 
 module.exports.waitForApp = waitForApp;
