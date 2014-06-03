@@ -81,7 +81,7 @@ Host.prototype = {
 
     debug('start');
     var self = this;
-    var target = self.options.runtime;
+    var target = userOptions.runtime || self.options.runtime;
 
     function run() {
       debug('binary: ', target);
