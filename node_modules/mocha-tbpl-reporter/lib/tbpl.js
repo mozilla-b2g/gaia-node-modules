@@ -66,8 +66,9 @@ TBPL.prototype = {
    * @param {Error} err failure.
    */
   onFail: function(test, err) {
-    var title = this.getTitle(test);
-    console.log('TEST-UNEXPECTED-FAIL | %s | %s', test.file, title);
+    var title = this.getTitle(test),
+        file = this.getFile(test);
+    console.log('TEST-UNEXPECTED-FAIL | %s | %s', file, title);
     this.failing += 1;
   },
 
@@ -111,6 +112,17 @@ TBPL.prototype = {
    */
   getTitle: function(test) {
     return this.sanitize(test.fullTitle());
+  },
+
+  getFile: function(test) {
+    if ('file' in test) {
+      return test.file;
+    }
+    if ('parent' in test) {
+      return this.getFile(test.parent);
+    }
+
+    return null;
   },
 
   /**
