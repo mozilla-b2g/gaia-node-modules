@@ -53,7 +53,7 @@ function detectBinary(source, options, callback) {
     var bin = bins.shift();
     if (!bin) {
       return callback(
-        new Error('cannot "' + options.product + '" binary in ' + source)
+        new Error('cannot find "' + options.product + '" binary in ' + source)
       );
     }
 

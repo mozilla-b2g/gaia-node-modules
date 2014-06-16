@@ -137,6 +137,7 @@ function main() {
     .option('--reporters', 'display available reporters')
     .option('--compilers <ext>:<module>,...',
       'use the given module(s) to compile files')
+    .option('--b2g-desktop-oop', 'enable oop mode for b2g desktop')
     .parse(process.argv);
 
   maybeApplyManifest();

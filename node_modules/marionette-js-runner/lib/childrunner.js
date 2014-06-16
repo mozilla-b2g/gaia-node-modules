@@ -176,7 +176,7 @@ ChildRunner.prototype = {
     return function() {
       var args = Array.prototype.slice.call(arguments);
       return child.send(['response', uniqueId].concat(args));
-    }
+    };
   },
 
   /**
@@ -295,6 +295,10 @@ ChildRunner.prototype = {
     options.prefs = options.prefs || {};
     options.hostOptions = options.hostOptions || {};
     options.hostOptions.port = port;
+
+    if (this.argv.indexOf('--b2g-desktop-oop') !== -1) {
+      options.hostOptions.oop = true;
+    }
 
     options.prefs[MARIONETTE_ENABLED_PREF] = true;
     options.prefs[MARIONETTE_PORT_PREF] = port;
