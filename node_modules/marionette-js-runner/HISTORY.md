@@ -1,3 +1,6 @@
+# 0.4.4
+  - pass the oop argument to b2g desktop
+
 # 0.4.3
   - fixing gjslint issues
 
