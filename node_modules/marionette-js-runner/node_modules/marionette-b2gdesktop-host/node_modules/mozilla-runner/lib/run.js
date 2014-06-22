@@ -39,6 +39,16 @@ function buildArgv(options) {
     argv.push('-oop');
   }
 
+  if (options.chrome) {
+    argv.push('-chrome');
+    argv.push(options.chrome);
+  }
+
+  if (options.startDebugger) {
+    argv.push('-start-debugger-server');
+    argv.push(options.startDebugger);
+  }
+
   return argv;
 }
 
@@ -110,7 +120,12 @@ function run(path, options, callback) {
     spawnProduct(binPath);
   }
 
-  detectBinary(path, options, foundBinary);
+  if (options && options.runtime &&
+      fs.existsSync(options.runtime)) {
+    foundBinary(null, options.runtime);
+  } else {
+    detectBinary(path, options, foundBinary);
+  }
 }
 
 module.exports.run = run;

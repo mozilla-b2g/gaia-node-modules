@@ -1,3 +1,7 @@
+# 0.8.0
+  - Support for mulet
+  - Support for using a custom gecko (rather than the one fetched via mozilla-download)
+
 # 0.7.0
   - added better customizations via option copying
 

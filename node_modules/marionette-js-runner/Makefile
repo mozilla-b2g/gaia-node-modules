@@ -1,8 +1,12 @@
 default: lint test
 
 b2g:
-	./node_modules/.bin/mozilla-download --verbose --product b2g $@
+	./node_modules/.bin/mozilla-download \
+		--product b2g \
+		--channel tinderbox \
+		--branch mozilla-central $@
 
+.PHONY: node_modules
 node_modules:
 	npm install
 
