@@ -35,7 +35,8 @@ ParentRunner.prototype = {
       ProfileBuilder: options.ProfileBuilder,
       argv: this.argv,
       profileBase: options.profileBase,
-      verbose: options.verbose
+      verbose: options.verbose,
+      runtime: options.runtime
     });
 
     // keep track of all children- mostly for future use.

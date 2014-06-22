@@ -83,6 +83,8 @@ function ChildRunner(options) {
   // base details used in every profile
   this.profileBase = options.profileBase;
 
+  this.runtime = options.runtime;
+
   this._nextRemoteId = 1;
   this._verbose = !!options.verbose;
   this.remotes = {};
@@ -316,7 +318,11 @@ ChildRunner.prototype = {
     var id = ++this._nextRemoteId;
 
     // XXX: allow passing default options to host and profile builder.
-    var host = new this.Host();
+    var hostOptions = {};
+    if (this.runtime)
+      hostOptions.customRuntime = this.runtime;
+    var host = new this.Host(hostOptions);
+
     var builder = new this.ProfileBuilder(this.profileBase);
 
     // save copy of records in this process to be referenced later.
