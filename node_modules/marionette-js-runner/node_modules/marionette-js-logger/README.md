@@ -19,11 +19,19 @@ client.startSession(function() {
   server = client.logger;
 
   // yey now console.log will be proxied to the node process!
-  // you can optionally override the console.log behaviour
+  // you can optionally override the console.log behaviour by overriding
+  // handleMessage.
   server.handleMessage = function(event) {
     event.message; // raw string of message
     event.fileName; // name where it was called
     event.lineNumber; // line number of call
+  };
+
+  // OR you can listen for the 'message' event on the server.  Use this if you
+  // are not the actual test logic and so cannot guarantee that the test logic
+  // will not clobber your handleMessage handler.
+  server.on('message', function(event) {
+    // I am literally the same event as that previous event
   };
 
   client.executeScript(function() {
