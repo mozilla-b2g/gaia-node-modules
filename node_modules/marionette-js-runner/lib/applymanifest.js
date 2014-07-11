@@ -56,9 +56,13 @@ function applyManifest(manifestPath, fileArgs, argv) {
     // Select all file names that have not been specified
     withoutFiles = difference(fullPaths, manifest.whitelist);
   } else if (manifest.blacklist) {
-    manifest.blacklist = manifest.blacklist.map(resolvePath);
+    var blacklist = manifest.blacklist;
+    if (!Array.isArray(blacklist)) {
+      blacklist = Object.keys(blacklist);
+    }
+    blacklist = blacklist.map(resolvePath);
     // Select only the file names that have been specified
-    withoutFiles = intersect(fullPaths, manifest.blacklist);
+    withoutFiles = intersect(fullPaths, blacklist);
   }
 
   argv = argv.map(defensiveResolvePath);
