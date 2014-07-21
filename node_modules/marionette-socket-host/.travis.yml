@@ -1,0 +1,6 @@
+before_install:
+  - "sudo apt-get install libzmq3-dev"
+language: node_js
+node_js:
+  - "0.10"
+script: "make ci"

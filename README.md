@@ -15,3 +15,13 @@ This repository contains all of the necessary node modules for gaia. By placing 
 1. After the gaia-node-modules pull request lands, update the gaia_node_modules.revision file in gaia to reference the new revision.
 2. Also update the package.json in gaia so they don't get out-of-sync.
 3. Submit a pull request, again tracked against a bug at: http://bugzilla.mozilla.org.
+
+## Testing Changes
+
+Before merging your pull request, it is a good idea to test your changes out.
+
+1. Clone gaia and open the [Makefile](https://github.com/mozilla-b2g/gaia/blob/master/Makefile).
+2. Search for "https://github.com/mozilla-b2g/gaia-node-modules/tarball" and "mozilla-b2g-gaia-node-modules-*/node_modules". Change both occurences of "mozilla-b2g" to your github username.
+3. Update gaia_node_modules.revision in gaia to reference the latest revision of your gaia-node-modules feature branch.
+4. Run |make clean && make really-clean|.
+5. Try running the command(s) that depend on your changes.

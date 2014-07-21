@@ -1,0 +1,6 @@
+before_install:
+  - "sudo easy_install http://closure-linter.googlecode.com/files/closure_linter-latest.tar.gz"
+  - "sudo apt-get install libzmq3-dev"
+language: node_js
+node_js:
+  - "0.10"
