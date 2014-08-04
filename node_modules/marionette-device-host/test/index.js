@@ -15,7 +15,7 @@ suite('host', function() {
 
   var subject;
   setup(function() {
-    subject = new Host();
+    subject = new Host( { restart: false } );
   });
 
   var port = 2828;
@@ -41,6 +41,11 @@ suite('host', function() {
   test('.options', function() {
     var subject = new Host({ xxx: true });
     assert.equal(subject.options.xxx, true);
+    assert.strictEqual(subject.options.restart, true);
+
+    subject = new Host({ xxx: true, restart: false });
+    assert.equal(subject.options.xxx, true);
+    assert.strictEqual(subject.options.restart, false);
   });
 
   test('Host.metadata', function() {
