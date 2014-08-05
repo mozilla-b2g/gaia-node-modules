@@ -5,6 +5,10 @@ Status](https://travis-ci.org/mozilla-b2g/marionette-device-host.png)](https://t
 
 A complete target environment for marionette using device or emulator (adb).
 
+Set RESTART_B2G to '0' in the shell environment to not restart b2g. When
+starting a test. Any other value will force restart. Either will override
+whatever is passed.
+
 ## LICENSE
 
 Copyright (c) 2013 Mozilla Foundation
