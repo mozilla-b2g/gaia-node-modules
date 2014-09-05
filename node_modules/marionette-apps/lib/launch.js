@@ -4,21 +4,24 @@ var getApp = require('./getapp').getApp;
 var url = require('url');
 var fsPath = require('path');
 
+var homescreenURL;
 function getHomescreen(client) {
   var chrome = client.scope({ context: 'chrome' });
-  var app = chrome.executeAsyncScript(function() {
-    var lock = window.navigator.mozSettings.createLock();
-    var req = lock.get('homescreen.manifestURL');
-    req.onsuccess = function() {
-      marionetteScriptFinished(req.result['homescreen.manifestURL']);
-    };
-    req.onerror = function() {
-      dump('Error while fetching setting: ' + req.error.name);
-      marionetteScriptFinished({ error: req.error.name });
-    };
-  });
-
-  return url.parse(app).hostname;
+  if (!homescreenURL) {
+    var app = chrome.executeAsyncScript(function() {
+      var lock = window.navigator.mozSettings.createLock();
+      var req = lock.get('homescreen.manifestURL');
+      req.onsuccess = function() {
+        marionetteScriptFinished(req.result['homescreen.manifestURL']);
+      };
+      req.onerror = function() {
+        dump('Error while fetching setting: ' + req.error.name);
+        marionetteScriptFinished({ error: req.error.name });
+      };
+    });
+    homescreenURL = url.parse(app).hostname;
+  }
+  return homescreenURL;
 }
 
 /**
