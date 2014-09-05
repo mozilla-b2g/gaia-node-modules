@@ -1,3 +1,6 @@
+# 0.3.8
+  - Bug 1063087 - Memoize homescreen URL.
+
 # 0.3.4
   - fix Bug 997045 - Cannot focus on input field when doing element.click().
 
