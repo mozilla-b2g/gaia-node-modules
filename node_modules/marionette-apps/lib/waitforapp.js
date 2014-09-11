@@ -37,7 +37,7 @@ function waitForAppSync(client, source, callback) {
   // Wait for the iframe is rendered.
   client.waitFor(function() {
     var frameClass = el.scriptWith(function(el) {
-      return el.parentNode.getAttribute('class');
+      return el.parentNode.parentNode.getAttribute('class');
     });
 
     if (frameClass !== null) {
@@ -50,7 +50,7 @@ function waitForAppSync(client, source, callback) {
   // Wait for the iframe is displayed on screen.
   client.waitFor(function() {
     var transitionState = el.scriptWith(function(el) {
-      return el.parentNode.getAttribute('transition-state');
+      return el.parentNode.parentNode.getAttribute('transition-state');
     });
 
     if (transitionState !== null) {
