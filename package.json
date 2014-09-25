@@ -47,11 +47,13 @@
     "rimraf": "2.2.5",
     "test-agent": "0.23.11",
     "travis-project-jobs": "0.0.1",
-    "watch": "~0.9.0"
-  },
-  "dependencies": {
+    "watch": "~0.9.0",
     "archiver": "^0.10.0",
     "mime": "^1.2.11",
     "slugid": "^1.0.2"
+  },
+  "dependencies": {
+    "js-yaml": "^3.2.2",
+    "json-templater": "^1.0.1"
   }
 }
