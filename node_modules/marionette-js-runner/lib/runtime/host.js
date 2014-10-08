@@ -33,6 +33,15 @@ Host.prototype = {
   },
 
   /**
+   * Tears down host.
+   *
+   * @param {Function} callback [Error err]
+   */
+  teardown: function(callback) {
+    Requests.emit('teardownHost', this.id, callback);
+  },
+
+  /**
    * Updates the properties of this host with metadata from the main process.
    *
    * @param {Object} meta to update instance with.

@@ -395,6 +395,23 @@ ChildRunner.prototype = {
     });
   },
 
+  teardownHost: function(remoteId, callback) {
+    var remote;
+
+    try {
+      remote = this._findRemote(remoteId);
+    } catch (err) {
+      callback(err);
+      return;
+    }
+
+    if (typeof remote.host.teardown === 'function') {
+      remote.host.teardown(callback);
+    } else {
+      callback();
+    }
+  },
+
   /**
    * Cleanup the hosts and all remaining state.
    *
