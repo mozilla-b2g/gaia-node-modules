@@ -70,7 +70,7 @@ HostManager.prototype = {
       var driverInstance = new driver({
         port: host.port,
         // XXX: make configurable
-        connectionTimeout: 60000
+        connectionTimeout: (60 * 1000) * 3 // 3 minutes
       });
 
       driverInstance.connect(function(err) {
