@@ -47,7 +47,6 @@
     "restify": "2.8.1",
     "rimraf": "2.2.5",
     "test-agent": "0.26",
-    "travis-project-jobs": "0.0.1",
     "watch": "~0.9.0",
     "archiver": "^0.10.0",
     "mime": "^1.2.11",
