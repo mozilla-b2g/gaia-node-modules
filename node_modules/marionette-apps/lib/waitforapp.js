@@ -32,7 +32,7 @@ function waitForApp(apps, source, callback) {
  * @param {Function} callback [Err error, Marionette.Element el].
  */
 function waitForAppSync(client, source, callback) {
-  var el = client.findElement('iframe[src*="' + source + '"]');
+  var el = client.findElement('#windows iframe[src*="' + source + '"]');
 
   // Wait for the iframe is rendered.
   client.waitFor(function() {
