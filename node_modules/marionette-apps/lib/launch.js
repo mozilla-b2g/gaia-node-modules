@@ -46,7 +46,8 @@ function launch(apps, origin, entrypoint, callback) {
   callback = callback || apps._client.defaultCallback;
 
   // Wait for Homescreen app is rendered.
-  var client = apps._client.scope({ searchTimeout: 10000 });
+  var client = apps._client.scope({ searchTimeout: 10000,
+                                    scriptTimeout: 10000 });
   var homescreenApp = getHomescreen(client);
 
   client.waitFor(function() {
