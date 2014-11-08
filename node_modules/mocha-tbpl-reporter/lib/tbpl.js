@@ -127,7 +127,10 @@ TBPL.prototype = {
     }
 
     if ('parent' in test) {
-      file = this.getFile(test.parent);
+      var tmpfile = this.getFile(test.parent);
+      if (tmpfile) {
+        file = tmpfile;
+      }
     }
 
     // Make the file relative if we have one...
