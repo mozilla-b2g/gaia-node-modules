@@ -51,7 +51,13 @@ function launch(apps, origin, entrypoint, callback) {
   var homescreenApp = getHomescreen(client);
 
   client.waitFor(function() {
-    var el = client.findElement('iframe[src*="' + homescreenApp + '"]');
+    var el;
+    try {
+      el = client.findElement('iframe[src*="' + homescreenApp + '"]');
+    } catch (e) {
+      return false;
+    }
+
     var frameClass = el.scriptWith(function(el) {
       return el.parentNode.getAttribute('class');
     });
