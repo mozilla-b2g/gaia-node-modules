@@ -18,29 +18,39 @@ DesktopClientFileManager.prototype = {
    * Add files by specified type.
    * The param is structured as
    * { type: 'videos', filePath: 'path/to/file', filename: 'filename' }.
+   * { type: 'videos', dirPath: 'path/to/folder' }.
    *
    * @param {Array|Object} file would like to add.
    */
-  add: function(file) {
-    var deviceStoragePath = this.deviceStorage.getDeviceStoragePath(),
-        targetPath = '',
-        files = [];
-
-    if (Array.isArray(file)) {
-      files = file;
-    } else {
-      files = [file];
+  add: function(files) {
+    var that = this;
+    if (!Array.isArray(files)) {
+      files = [files];
     }
 
     files.forEach(function(file) {
-      var filename = file.filename || path.basename(file.filePath);
-      targetPath = this.deviceStorage.getMediaFilePath(file.type);
-      if (!fs.existsSync(targetPath)) {
-        fs.mkdirSync(targetPath);
+      var dirPath = file.dirPath;
+      var type = file.type;
+      if (file.filePath) {
+        that._addFile(file);
+      } else {
+        fs.readdirSync(dirPath).forEach(function(filename) {
+          that._addFile({
+            type: type,
+            filePath: path.join(dirPath, filename)
+          });
+        });
       }
-      this._copyFile(file.filePath,
-                     path.join(targetPath, filename));
-    }.bind(this));
+    });
+  },
+
+  _addFile: function(file) {
+    var filename = file.filename || path.basename(file.filePath);
+    var targetPath = this.deviceStorage.getMediaFilePath(file.type);
+    if (!fs.existsSync(targetPath)) {
+      fs.mkdirSync(targetPath);
+    }
+    this._copyFile(file.filePath, path.join(targetPath, filename));
   },
 
   /**
