@@ -7,7 +7,11 @@ MOCHA_OPTS=--reporter $(REPORTER) \
 default: lint test
 
 b2g:
-	./node_modules/.bin/mozilla-download --verbose --product b2g $@
+	DEBUG=* ./node_modules/.bin/mozilla-download \
+	--verbose \
+	--product b2g \
+	--channel tinderbox \
+	--branch mozilla-central $@
 
 .PHONY: lint
 lint:

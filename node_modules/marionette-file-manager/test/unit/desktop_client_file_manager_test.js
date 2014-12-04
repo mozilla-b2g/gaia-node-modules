@@ -1,7 +1,7 @@
-const DEVICE_STORAGE_PATH = __dirname + '/devicestorage',
-      TEST_FILES_PATH = '../test_files',
-      TEST_FILE_NAME = 'fxos.png',
-      PICTURES_TYPE = 'pictures';
+var DEVICE_STORAGE_PATH = __dirname + '/devicestorage',
+    TEST_FILES_PATH = '../test_files',
+    TEST_FILE_NAME = 'fxos.png',
+    PICTURES_TYPE = 'pictures';
 var assert = require('assert'),
     sinon = require('sinon'),
     fs = require('fs'),
@@ -59,9 +59,9 @@ suite('DesktopClientFileManager', function() {
       );
     });
 
-    test('should files in the pictures directory', function() {
-      const TEST_FILE_1 = 'test_file_1.png',
-            TEST_FILE_2 = 'test_file_2.png';
+    test('should add files in the pictures directory', function() {
+      var TEST_FILE_1 = 'test_file_1.png',
+          TEST_FILE_2 = 'test_file_2.png';
       var fileList = [];
 
       subject.add([
@@ -80,6 +80,18 @@ suite('DesktopClientFileManager', function() {
       fileList = fs.readdirSync(deviceStorage.getMediaFilePath(PICTURES_TYPE));
       assert.ok(fileList.indexOf(TEST_FILE_1) !== -1);
       assert.ok(fileList.indexOf(TEST_FILE_2) !== -1);
+    });
+
+    test('should add all files of a directory ' +
+         'in the pictures directory', function() {
+      var fileList = [];
+      subject.add({
+        type: PICTURES_TYPE,
+        dirPath: path.join(__dirname, TEST_FILES_PATH)
+      });
+      fileList = fs.readdirSync(deviceStorage.getMediaFilePath(PICTURES_TYPE));
+      assert.ok(fileList.indexOf('fxos.png') !== -1);
+      assert.ok(fileList.indexOf('hello_world.json') !== -1);
     });
   });
 

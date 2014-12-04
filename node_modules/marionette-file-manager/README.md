@@ -31,6 +31,13 @@ client.fileManager.add([
 ]);
 ```
 
+```
+// Add all files of a directory into device storage.
+client.fileManager.add([
+  { type: 'pictures', dirPath: 'path/to/dir' }
+]);
+```
+
 ### Remove files
 ```
 // Remove the filename2 file from pictures directory.
