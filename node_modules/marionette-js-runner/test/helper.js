@@ -7,16 +7,23 @@ global.sinon = require('sinon');
 // so we can call assert.calledWith
 global.sinon.assert.expose(assert, { prefix: '' });
 
+function env() {
+  var env = {};
+  for (var key in process.env) env[key] = process.env[key];
+  env.MOCHA_COLORS = '0';
+  return env;
+}
+
 function spawnMocha(argv) {
   var mocha = __dirname + '/../node_modules/.bin/mocha';
   var spawn = require('child_process').spawn;
-  return child = spawn(mocha, argv);
+  return child = spawn(mocha, argv, { env: env() });
 }
 
 function spawnMarionette(argv) {
   var bin = __dirname + '/../bin/marionette-mocha';
   var spawn = require('child_process').spawn;
-  return child = spawn(bin, argv);
+  return child = spawn(bin, argv, { env: env() });
 }
 
 function mockProcessSend() {

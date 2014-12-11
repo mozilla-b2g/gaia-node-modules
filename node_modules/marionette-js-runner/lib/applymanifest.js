@@ -29,26 +29,12 @@ function defensiveResolvePath(argument) {
  * Transform the input command-line arguments according to the directives found
  * in the specified manifest file.
  *
- * @param {String} manifestPath referencing the manifest file.
- * @param {Array} argv parsed command-line arguments.
- * @return {Array} transformed command-line arguments.
+ * @param {Object} manifest referencing the manifest file.
+ * @param {Array} files to filter.
+ * @return {Array} filtered files.
  */
-function applyManifest(manifestPath, argv) {
-  var fullPaths, manifest;
-
-  try {
-    manifest = fs.readFileSync(path.resolve(manifestPath));
-  } catch (err) {
-    throw new Error('Unable to open manifest file: ' + manifestPath);
-  }
-
-  try {
-    manifest = JSON.parse(manifest);
-  } catch (err) {
-    throw new Error('Unable to parse manifest file as JSON');
-  }
-
-  fullPaths = argv.map(resolvePath);
+function applyManifest(manifest, files) {
+  var fullPaths = files.map(resolvePath);
 
   if (manifest.whitelist) {
     manifest.whitelist = manifest.whitelist.map(resolvePath);
