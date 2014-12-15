@@ -1,1 +1,3 @@
 */sockit-to-me/build
+node_modules/marionette-js-runner/venv
+node_modules/marionette-js-runner/host/python/runner-service/gaia_runner_service.egg-info
