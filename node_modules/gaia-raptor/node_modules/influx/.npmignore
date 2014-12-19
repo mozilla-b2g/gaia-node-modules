@@ -1,0 +1,6 @@
+node_modules
+temp.js
+coverage
+.idea
+.coveralls.yml
+npm-debug.log
