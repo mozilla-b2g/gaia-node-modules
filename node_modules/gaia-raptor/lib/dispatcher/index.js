@@ -11,8 +11,6 @@ var Dispatcher = function() {
   EventEmitter.call(this);
 
   this.parsers = [];
-
-  Device.clearLog();
   this.adb = new Adb();
 };
 

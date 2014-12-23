@@ -35,12 +35,15 @@ var ColdLaunch = function(options) {
 
   /**
    * To prepare for a test run we need to:
-   * 1. Restart B2G
-   * 2. Prepare the device to accept tap commands
-   * 3. Wait for the Homescreen to render the icons so we can capture the
+   * 1. Clear the ADB log
+   * 2. Restart B2G
+   * 3. Prepare the device to accept tap commands
+   * 4. Wait for the Homescreen to render the icons so we can capture the
    *    coordinates of the app
-   * 4. Swipe down on the Homescreen to account for Flame tapping bugs
+   * 5. Swipe down on the Homescreen to account for Flame tapping bugs
    */
+  Device.clearLog();
+
   Device
     .restartB2G()
     .then(function() {
