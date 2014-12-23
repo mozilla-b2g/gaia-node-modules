@@ -35,7 +35,7 @@ var parser = function(item) {
   return {
     entryType: parts[0],
     name: name[0],
-    context: name[1],
+    context: name[1] === 'GeckoConsole' ? 'System' : name[1],
     startTime: parseFloat(parts[2]),
     duration: parseFloat(parts[3]),
     epoch: parseFloat(parts[4]),

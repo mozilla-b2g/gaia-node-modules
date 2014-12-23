@@ -73,7 +73,8 @@ Reboot.prototype.testRun = function() {
           entry.epoch = entry.name === 'deviceReboot' ?
             start : Date.now();
 
-          debug('Received performance entry `%s`', entry.name);
+          debug('Received performance entry `%s` for %s',
+            entry.name, entry.context);
 
           if (entry.context !== 'System') {
             return;
