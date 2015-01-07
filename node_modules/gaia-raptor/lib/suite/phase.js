@@ -15,7 +15,8 @@ var report = require('../reporter');
  *   runs: Number,
  *   timeout: Number,
  *   retries: Number,
- *   preventDispatching: Boolean
+ *   preventDispatching: Boolean,
+ *   emulator: Boolean
  * }} options
  * @constructor
  */
@@ -26,7 +27,7 @@ var Phase = function(options) {
   this.results = [];
   this.time = Date.now();
   this.options = merge({
-    timeout: 60 * 1000,
+    timeout: options.emulator ? 150 * 1000 : 60 * 1000,
     retries: 1,
     runs: 1
   }, options);
