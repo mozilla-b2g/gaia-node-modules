@@ -42,6 +42,10 @@ var raptor = function(options, callback) {
     options.runs = parseInt(process.env.RUNS, 10);
   }
 
+  if (process.env.RAPTOR_EMULATOR) {
+    options.emulator = true;
+  }
+
   // Skip parsing for application paths if our runner doesn't require it
   if (!options.apps && !process.env.APP && !process.env.APPS) {
     createRunner(options, callback);
