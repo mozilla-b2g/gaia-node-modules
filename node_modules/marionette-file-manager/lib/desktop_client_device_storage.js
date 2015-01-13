@@ -1,4 +1,3 @@
-const TESTING_DIRECTORY = 'device-storage-testing';
 var path = require('path'),
     fs = require('fs');
 
@@ -27,8 +26,7 @@ DesktopClientDeviceStorage.prototype = {
    * @return {String} path to the directory of the specified type files.
    */
   getMediaFilePath: function(type) {
-    var filePath;
-    filePath = path.join(this.getDeviceStoragePath(), type);
+    var filePath = path.join(this.getDeviceStoragePath(), type);
     if (!fs.existsSync(filePath)) {
       fs.mkdirSync(filePath);
     }
@@ -37,12 +35,19 @@ DesktopClientDeviceStorage.prototype = {
 
   /**
    * Get device storage path.
-   * The device-storage-testing directory is also created by FF.
    *
    * @return {String} path to device storage directory.
    */
   getDeviceStoragePath: function() {
-    return path.join(this._getTemporaryPath(), TESTING_DIRECTORY);
+    // The device-storage-testing directory is also created by FF.
+    // If it doesn't exsit before we get the its path,
+    // we will create it manually.
+    var filePath = path.join(this._getTemporaryPath(),
+      'device-storage-testing');
+    if (!fs.existsSync(filePath)) {
+      fs.mkdirSync(filePath);
+    }
+    return filePath;
   },
 
   /**
