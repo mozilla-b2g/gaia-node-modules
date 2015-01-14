@@ -97,7 +97,8 @@
         "defaultOrientation": "portrait",
         "dimensions": [320, 480],
         "swipePadding": [40, 40, 40, 40],
-        "densityProperty": "qemu.sf.lcd_density"
+        "densityProperty": "qemu.sf.lcd_density",
+        "waitAfterWrite": 250
       }
     }
   }

@@ -81,10 +81,13 @@ Object
     Orng.prototype[event] = function() {
       var orng = this;
       var args = [config.events[event]].concat([].slice.call(arguments));
+      var wait = orng.device.waitAfterWrite || 0;
       return this
         .copyCommand(util.format.apply(util, args))
         .then(function() {
-          return orng.trigger();
+          setTimeout(function() {
+            return orng.trigger();
+          }, wait);
         });
     };
   });
