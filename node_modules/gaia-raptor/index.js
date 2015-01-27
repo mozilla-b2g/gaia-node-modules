@@ -10,6 +10,13 @@ process.setMaxListeners(0);
 // Capture environment variables set in .env files
 env.load();
 
+var currentRunner;
+
+var complete = function() {
+  currentRunner.device.log.stop();
+  console.log('[Test] All tests completed');
+};
+
 /**
  * Factory to instantiate a test suite. Sets up error and ready notification.
  * @param {object} options options to pass through to suite
@@ -19,9 +26,10 @@ env.load();
 var createRunner = function(options, callback) {
   var runner = new Suite(options);
 
+  currentRunner = runner;
+
   runner.once('error', function(err) {
     console.error(err instanceof Error ? err.stack : err);
-    runner.destroy();
     process.exit(1);
   });
 
@@ -48,7 +56,8 @@ var raptor = function(options, callback) {
 
   // Skip parsing for application paths if our runner doesn't require it
   if (!options.apps && !process.env.APP && !process.env.APPS) {
-    createRunner(options, callback);
+    createRunner(options, callback)
+      .on('end', complete);
     return;
   }
 
@@ -78,7 +87,7 @@ var raptor = function(options, callback) {
     // done working with this app, move on to the next application's test runs
     createRunner(settings, callback)
       .on('end', next);
-  });
+  }, complete);
 };
 
 module.exports = raptor;

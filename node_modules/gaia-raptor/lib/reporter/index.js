@@ -1,14 +1,21 @@
-var debug = require('debug')('raptor:reporter');
+var reportToFile = require('./file');
+var reportToDatabase = require('./database');
 
 /**
- * Report time-series data to a file or database determined from the environment
+ * Report time-series data to a file and possibly also to a database determined
+ * from the environment
  * @param {object} data
  * @returns {Promise}
  */
 module.exports = function(data) {
-  var reporter = process.env.RAPTOR_DATABASE ? 'database' : 'file';
-  var report = require('./' + reporter);
+  var promise = reportToFile(data);
 
-  debug('Using %s method to report', reporter);
-  return report(data);
+  if (process.env.RAPTOR_DATABASE) {
+    promise = promise
+      .then(function() {
+        return reportToDatabase(data);
+      });
+  }
+
+  return promise;
 };
