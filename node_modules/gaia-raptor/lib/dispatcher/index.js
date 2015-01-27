@@ -1,17 +1,15 @@
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
-var Device = require('../device');
-var Adb = require('../adb');
 
 /**
  * Create an entity that can wire up event listeners to ADB log parsers
  * @constructor
  */
-var Dispatcher = function() {
+var Dispatcher = function(device) {
   EventEmitter.call(this);
 
   this.parsers = [];
-  this.adb = new Adb();
+  this.device = device;
 };
 
 util.inherits(Dispatcher, EventEmitter);
@@ -28,16 +26,16 @@ Dispatcher.prototype.registerParser = function(parser) {
   // Saving a collection of parsers in case we want to allow unregistering
   // parsers in the future
   this.parsers.push(parser);
-  this.adb.stream.on('entry', function(entry) {
+  this.device.log.stream.on('entry', function(entry) {
     parser(entry, dispatcher);
-  })
+  });
 };
 
 /**
- * Stop the log stream and remove any parser listeners
+ * Remove any parser listeners
  */
 Dispatcher.prototype.end = function() {
-  this.adb.end();
+  this.device.log.stream.removeAllListeners('entry');
   this.removeAllListeners();
 };
 

@@ -1,12 +1,9 @@
 var Phase = require('./phase');
 var Dispatcher = require('../dispatcher');
-var Device = require('../device');
 var Promise = require('promise');
 var util = require('util');
 var performanceParser = require('../parsers/performance');
 var debug = require('debug')('raptor:reboot');
-var merge = require('deepmerge');
-var envParse = require('../parsers/parse-env');
 var noop = function() {};
 
 /**
@@ -36,7 +33,8 @@ util.inherits(Reboot, Phase);
  * Manually instantiate a Dispatcher and listen for performance entries
  */
 Reboot.prototype.setup = function() {
-  this.dispatcher = new Dispatcher();
+  this.device.log.restart();
+  this.dispatcher = new Dispatcher(this.device);
   this.registerParser(performanceParser);
   this.capture('performanceentry');
 };
@@ -46,9 +44,18 @@ Reboot.prototype.setup = function() {
  * @returns {Promise}
  */
 Reboot.prototype.reboot = function() {
-  return Device
-    .clearLog()
-    .then(Device.reboot);
+  var runner = this;
+
+  return this.getDevice()
+    .then(function() {
+      return runner.device.log.clear();
+    })
+    .then(function() {
+      return runner.device.util.reboot();
+    })
+    .then(function(time) {
+      return runner.device.log.mark('deviceReboot@System', time);
+    });
 };
 
 /**
@@ -66,6 +73,9 @@ Reboot.prototype.testRun = function() {
       .reboot()
       .then(function() {
         runner.setup();
+
+        debug('Waiting for System boot');
+
         runner.dispatcher.on('performanceentry', function handler(entry) {
           // Due to a bug in the Flame's ability to keep consistent time after
           // a reboot, we are currently overriding the time of the event. Not
@@ -118,13 +128,13 @@ Reboot.prototype.format = function(entries) {
 
     var series = util.format('Suites.Reboot.%s.%s',
       entry.context, entry.name);
-    var point = merge({
+    var point = {
       name: entry.name,
       time: runner.time,
       epoch: entry.epoch,
       value: entry.entryType === 'mark' ?
       entry.epoch - deviceReboot.epoch : entry.duration
-    }, envParse());
+    };
 
     if (!results[series]) {
       results[series] = [];

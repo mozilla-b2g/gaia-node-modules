@@ -2,10 +2,9 @@ var EventEmitter = require('events').EventEmitter;
 var Promise = require('promise');
 var util = require('util');
 var merge = require('deepmerge');
-var Orng = require('orng');
 var Dispatcher = require('../dispatcher');
 var helpers = require('../helpers');
-var Device = require('../device');
+var MozDevice = require('mozdevice');
 var report = require('../reporter');
 
 /**
@@ -33,14 +32,11 @@ var Phase = function(options) {
   }, options);
 
   this.resetTimeout();
-
-  // Allow specific runners to handle their own Dispatcher set up
-  if (!options.preventDispatching) {
-    this.dispatcher = new Dispatcher();
-  }
 };
 
 util.inherits(Phase, EventEmitter);
+
+Phase.prototype.GRID_ORIGIN_Y = 110;
 
 /**
  * Emit an error if a test run times out
@@ -99,14 +95,6 @@ Phase.prototype.registerParser = function(parser) {
 Phase.prototype.report = report;
 
 /**
- * Clean up any messes created from the suite runner
- */
-Phase.prototype.destroy = function() {
-  this.removeAllListeners();
-  this.dispatcher.end();
-};
-
-/**
  * Read an manifest.webapp file as an object
  * @param {string} path
  * @returns {object}
@@ -119,13 +107,28 @@ Phase.prototype.requireManifest = function(path) {
  * Resolve when a device is ready for user interaction, e.g. tapping, swiping
  * @returns {Promise}
  */
-Phase.prototype.prepareForInput = function() {
+Phase.prototype.getDevice = function() {
   var runner = this;
 
-  return new Promise(function(resolve) {
-    Orng(function(orng) {
-      runner.deviceInput = orng;
-      resolve();
+  if (this.device) {
+    return Promise.resolve(this.device);
+  }
+
+  return new Promise(function(resolve, reject) {
+    MozDevice(function(err, device) {
+      if (err) {
+        return runner.emit('error', err);
+      }
+
+      runner.device = device;
+
+      // Allow specific runners to handle their own Dispatcher set up
+      if (!runner.options.preventDispatching) {
+        device.log.start();
+        runner.dispatcher = new Dispatcher(device);
+      }
+
+      resolve(device);
     });
   });
 };
@@ -181,7 +184,8 @@ Phase.prototype.next = function() {
       runner.handleRun()
         .then(function() {
           runner.emit('end');
-          runner.destroy();
+          runner.removeAllListeners();
+          runner.dispatcher.end();
         }, rejectError);
     });
   }
@@ -207,8 +211,8 @@ Phase.prototype.fail = function(err) {
       this.resetTimeout();
       this.results = [];
 
-      Device
-        .clearLog()
+      this.device.log
+        .clear()
         .then(function() {
           return runner.retry();
         })
@@ -255,7 +259,7 @@ Phase.prototype.test = function() {
  * @returns {Promise}
  */
 Phase.prototype.swipeHack = function() {
-  return this.deviceInput.drag(250, 250, 250, 350, 10, 150);
+  return this.device.input.drag(250, 250, 250, 350, 10, 150);
 };
 
 /**
