@@ -133,7 +133,9 @@ Reboot.prototype.format = function(entries) {
       time: runner.time,
       epoch: entry.epoch,
       value: entry.entryType === 'mark' ?
-      entry.epoch - deviceReboot.epoch : entry.duration
+        entry.epoch - deviceReboot.epoch : entry.duration,
+      gaiaRev: this.device.gaiaRevision,
+      geckoRev: this.device.geckoRevision
     };
 
     if (!results[series]) {

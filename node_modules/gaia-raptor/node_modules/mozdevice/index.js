@@ -99,6 +99,7 @@ Device.prototype.setProperties = function() {
  * 1. Verify and set the serial for the device
  * 2. Fetch the device properties and set common values
  * 3. Set up device APIs and prepare for input
+ * 4. Pre-fetch the Gecko and Gaia revisions
  * @param {String} [serial]
  * @returns {Promise}
  */
@@ -119,10 +120,19 @@ Device.create = function(serial) {
       device.log = new Logging(device);
       device.input = new Input(device);
       device.util = new Util(device);
-
+    })
+    .then(function() {
       return device.input.installBinary();
     })
     .then(function() {
+      return device.util.getGaiaRevision();
+    })
+    .then(function(gaiaRevision) {
+      device.gaiaRevision = gaiaRevision;
+      return device.util.getGeckoRevision();
+    })
+    .then(function(geckoRevision) {
+      device.geckoRevision = geckoRevision;
       return device;
     });
 };
