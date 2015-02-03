@@ -14,6 +14,7 @@ var installed = false;
  * @constructor
  */
 var Input = function(device) {
+  this.device = device;
   this.serial = device.serial;
   this.inputEvent = device.config.inputEvent;
   this.scriptTimeout = device.config.scriptWriteTimeout || 250;
@@ -31,10 +32,8 @@ Input.prototype.installBinary = function() {
   var binary = path.join(__dirname, 'orng');
   var serial = this.serial;
 
-  return new Command()
-    .env('ANDROID_SERIAL', serial)
-    .adb('push ' + binary + ' /data/local/orng')
-    .exec()
+  return this.device.util
+    .push(binary, '/data/local/orng')
     .then(function() {
       return new Command()
         .env('ANDROID_SERIAL', serial)
