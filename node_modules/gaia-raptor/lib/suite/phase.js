@@ -259,7 +259,13 @@ Phase.prototype.test = function() {
  * @returns {Promise}
  */
 Phase.prototype.swipeHack = function() {
-  return this.device.input.drag(250, 250, 250, 350, 10, 150);
+  var x = this.device.config.dimensions[0] / 2;
+  var startY = 250;
+  var endY = 350;
+  var steps = 10;
+  var duration = this.device.touchFrequency * steps;
+
+  return this.device.input.drag(x, startY, x, endY, steps, duration);
 };
 
 /**
