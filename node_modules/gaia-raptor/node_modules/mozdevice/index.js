@@ -117,6 +117,7 @@ Device.create = function(serial) {
         devices.android[device.model];
       device.pixelRatio = device.properties[device.config.densityProperty ||
         'ro.sf.lcd_density'] / 160;
+      device.touchFrequency = device.config.touchFrequency || 10;
       device.log = new Logging(device);
       device.input = new Input(device);
       device.util = new Util(device);
