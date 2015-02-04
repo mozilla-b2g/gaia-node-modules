@@ -235,7 +235,7 @@ ColdLaunch.prototype.waitForMemoryEntry = function() {
 ColdLaunch.prototype.prime = function() {
   var runner = this;
 
-  debug('Priming application cold-launch');
+  debug('Priming %s cold-launch', this.appName);
 
   // Wait for 6 seconds to give time for pre-allocated process
   setTimeout(function() {

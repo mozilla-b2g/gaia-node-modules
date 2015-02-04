@@ -89,7 +89,8 @@
         "inputEvent": "/dev/input/event0",
         "defaultOrientation": "portrait",
         "dimensions": [480, 854],
-        "swipePadding": [40, 40, 40, 40]
+        "swipePadding": [40, 40, 40, 40],
+        "touchFrequency": 13
       },
       "Full Android on Emulator": {
         "hdmiResolution": null,
