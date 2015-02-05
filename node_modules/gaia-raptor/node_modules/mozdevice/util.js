@@ -153,8 +153,8 @@ var Util = function(device) {
   this.serial = device.serial;
 };
 
-Util.prototype._gaiaRevision = null;
-Util.prototype._geckoRevision = null;
+Util._gaiaRevision = null;
+Util._geckoRevision = null;
 
 /**
  * Reboot the device and fetch the device time at the moment it occurred
@@ -319,13 +319,11 @@ Util.prototype.pullB2GIni = function() {
  * @returns {Promise}
  */
 Util.prototype.getGeckoRevision = function() {
-  if (this._geckoRevision) {
-    return Promise.resolve(this._geckoRevision);
+  if (Util._geckoRevision) {
+    return Promise.resolve(Util._geckoRevision);
   }
 
   var util = this;
-
-
 
   // The Gecko revision is either in a sources.xml file or one of a couple INI
   // files. Make sure we try all locations until we have the Gecko revision.
@@ -348,7 +346,7 @@ Util.prototype.getGeckoRevision = function() {
   // Cache the revision for the current session
   promise.then(function(sha) {
     debug('Gecko revision for device: %s', sha);
-    util._geckoRevision = sha;
+    Util._geckoRevision = sha;
   });
 
   return promise;
@@ -359,11 +357,10 @@ Util.prototype.getGeckoRevision = function() {
  * @returns {Promise}
  */
 Util.prototype.getGaiaRevision = function() {
-  if (this._gaiaRevision) {
-    return Promise.resolve(this._gaiaRevision);
+  if (Util._gaiaRevision) {
+    return Promise.resolve(Util._gaiaRevision);
   }
 
-  var util = this;
   var promise = this
     .pullApplicationZip()
     .then(readGaiaCommit);
@@ -371,7 +368,7 @@ Util.prototype.getGaiaRevision = function() {
   // Cache the revision for the current session
   promise.then(function(sha) {
     debug('Gaia revision for device: %s', sha);
-    util._gaiaRevision = sha;
+    Util._gaiaRevision = sha;
   });
 
   return promise;
