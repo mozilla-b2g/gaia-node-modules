@@ -285,4 +285,85 @@ Phase.prototype.start = function() {
   });
 };
 
+/**
+ * For a given result entry, create a reportable object which represents a point
+ * of a performance marker or measure. Captures any environment metadata
+ * supplied for persistence.
+ * @param {object} entry
+ * @param {object} launch result entry which marked the launch time of the app
+ * @returns {object}
+ */
+Phase.prototype.createTimePoint = function(entry, startEntry) {
+  return {
+    name: entry.name,
+    time: this.time,
+    epoch: entry.epoch,
+    value: entry.entryType === 'mark' ?
+      entry.epoch - startEntry.epoch : entry.duration,
+    gaiaRev: this.device.gaiaRevision,
+    geckoRev: this.device.geckoRevision
+  };s
+};
+
+/**
+ * For a given result entry, create a reportable object which represents a point
+ * of memory data. Captures any environment metadata supplied for persistence.
+ * @param {object} entry result entry
+ * @returns {object}
+ */
+Phase.prototype.createMemoryPoint = function(entry) {
+  return {
+    name: entry.name,
+    time: this.time,
+    uss: entry.uss,
+    pss: entry.pss,
+    rss: entry.rss,
+    gaiaRev: this.device.gaiaRevision,
+    geckoRev: this.device.geckoRevision
+  };
+};
+
+/**
+ * Write the given entries to a format suitable for reporting
+ * @param {Array} entries
+ * @param {String} suite
+ * @param {String} startMark
+ * @returns {object}
+ */
+Phase.prototype.format = function(entries, suite, startMark) {
+  var runner = this;
+  var results = {};
+  var seriesFormat = 'Suites.%s.%s.%s';
+  var deviceAction, deviceActionIndex;
+
+  // Find the deviceAction and its location in the entries
+  entries.every(function(entry, index) {
+    if (entry.name === startMark) {
+      deviceAction = entry;
+      deviceActionIndex = index;
+      return false;
+    }
+
+    return true;
+  });
+
+  // Remove deviceAction from the other entries so we can save another filtering
+  entries.splice(deviceActionIndex, 1);
+
+  entries.forEach(function(entry) {
+    var series = util.format(seriesFormat, suite, entry.context, entry.name);
+    var point = entry.uss ?
+      runner.createMemoryPoint(entry) :
+      runner.createTimePoint(entry, deviceAction);
+
+    if (!results[series]) {
+      results[series] = [];
+    }
+
+    results[series].push(point);
+  });
+
+  return results;
+};
+
 module.exports = Phase;
