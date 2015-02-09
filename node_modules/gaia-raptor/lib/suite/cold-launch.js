@@ -307,95 +307,16 @@ ColdLaunch.prototype.retry = function() {
 };
 
 /**
- * For a given result entry, create a reportable object which represents a point
- * of memory data. Captures any environment metadata supplied for persistence.
- * @param {object} entry result entry
- * @returns {object}
- */
-ColdLaunch.prototype.createMemoryPoint = function(entry) {
-  return {
-    name: entry.name,
-    time: this.time,
-    uss: entry.uss,
-    pss: entry.pss,
-    rss: entry.rss,
-    gaiaRev: this.device.gaiaRevision,
-    geckoRev: this.device.geckoRevision
-  };
-};
-
-/**
- * For a given result entry, create a reportable object which represents a point
- * of a performance marker or measure. Captures any environment metadata
- * supplied for persistence.
- * @param {object} entry
- * @param {object} launch result entry which marked the launch time of the app
- * @returns {object}
- */
-ColdLaunch.prototype.createPoint = function(entry, launch) {
-  return {
-    name: entry.name,
-    time: this.time,
-    epoch: entry.epoch,
-    value: entry.entryType === 'mark' ?
-      entry.epoch - launch.epoch :
-      entry.duration,
-    gaiaRev: this.device.gaiaRevision,
-    geckoRev: this.device.geckoRevision
-  };
-};
-
-/**
- * Write the given entries to a format suitable for reporting
- * @param {Array} entries
- * @returns {object}
- */
-ColdLaunch.prototype.format = function(entries) {
-  var runner = this;
-  var appLaunch = entries.filter(function(entry) {
-    return entry.name === 'appLaunch';
-  })[0];
-
-  var results = {};
-
-  entries.forEach(function(entry) {
-    if (entry.context !== runner.manifest.name) {
-      return;
-    }
-
-    if (entry.name === 'appLaunch') {
-      return;
-    }
-
-    var name = entry.name;
-    var context = runner.appName;
-    var seriesFormat = 'Suites.%s.%s.%s';
-    var series, point;
-
-    if (name === 'fullyLoadedMemory') {
-      series = util.format(seriesFormat, 'Memory', context, name);
-      point = runner.createMemoryPoint(entry);
-    } else {
-      series = util.format(seriesFormat, 'ColdLaunch', context, name);
-      point = runner.createPoint(entry, appLaunch);
-    }
-
-    if (!results[series]) {
-      results[series] = [];
-    }
-
-    results[series].push(point);
-  });
-
-  return results;
-};
-
-/**
  * Report the results for an individual test run
  * @returns {Promise}
  */
 ColdLaunch.prototype.handleRun = function() {
-  var results = this.format(this.results);
+  var appName = this.appName;
+
+  var results = this.format(this.results.filter(function(entry) {
+    return entry.context === appName;
+  }), 'ColdLaunch', 'appLaunch');
+
   return this.report(results);
 };
 

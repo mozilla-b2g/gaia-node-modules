@@ -3,12 +3,11 @@ var Dispatcher = require('../dispatcher');
 var Promise = require('promise');
 var util = require('util');
 var performanceParser = require('../parsers/performance');
-var debug = require('debug')('raptor:reboot');
+var debug = require('debug')('raptor:restart-b2g');
 var noop = function() {};
 
 /**
- * Create a suite runner which achieves a ready state when the device has been
- * rebooted
+ * Create a suite runner which achieves a ready state when b2g has been restarted
  * @param {{
  *   runs: Number,
  *   timeout: Number,
@@ -16,23 +15,18 @@ var noop = function() {};
  * }} options
  * @constructor
  */
-var Reboot = function(options) {
-  // The connection to the dispatcher is ADB-based, so rebooting the device will
-  // kill the ADB stream. Prevent the base runner from instantiating so we can
-  // control the dispatcher lifecycle
-  options.preventDispatching = true;
-
+var RestartB2G = function(options) {
   Phase.call(this, options);
 
   this.start();
 };
 
-util.inherits(Reboot, Phase);
+util.inherits(RestartB2G, Phase);
 
 /**
  * Manually instantiate a Dispatcher and listen for performance entries
  */
-Reboot.prototype.setup = function() {
+RestartB2G.prototype.setup = function() {
   this.device.log.restart();
   this.dispatcher = new Dispatcher(this.device);
   this.registerParser(performanceParser);
@@ -40,10 +34,10 @@ Reboot.prototype.setup = function() {
 };
 
 /**
- * Perform a device reboot
+ * Perform a b2g restart
  * @returns {Promise}
  */
-Reboot.prototype.reboot = function() {
+RestartB2G.prototype.restart = function() {
   var runner = this;
 
   return this.getDevice()
@@ -51,38 +45,30 @@ Reboot.prototype.reboot = function() {
       return runner.device.log.clear();
     })
     .then(function() {
-      return runner.device.util.reboot();
+      return runner.device.util.restartB2G();
     })
     .then(function(time) {
-      return runner.device.log.mark('deviceReboot@System', time);
+      return runner.device.log.mark('deviceB2GStart', time);
     });
 };
 
 /**
- * Stand up a device reboot for each individual test run. Will denote the run
+ * Stand up a b2g restart for each individual test run. Will denote the run
  * has completed its work when the System marks the end of the logo screen.
  * @returns {Promise}
  */
-Reboot.prototype.testRun = function() {
+RestartB2G.prototype.testRun = function() {
   var runner = this;
 
   return new Promise(function(resolve) {
-    var start = Date.now();
-
     runner
-      .reboot()
+      .restart()
       .then(function() {
         runner.setup();
 
-        debug('Waiting for System boot');
+        debug('Waiting for System restart');
 
         runner.dispatcher.on('performanceentry', function handler(entry) {
-          // Due to a bug in the Flame's ability to keep consistent time after
-          // a reboot, we are currently overriding the time of the event. Not
-          // very accurate, but it's better than nothing
-          entry.epoch = entry.name === 'deviceReboot' ?
-            start : Date.now();
-
           debug('Received performance entry `%s` for %s',
             entry.name, entry.context);
 
@@ -106,15 +92,15 @@ Reboot.prototype.testRun = function() {
  * does nothing to handle a retry.
  * @returns {Promise}
  */
-Reboot.prototype.retry = noop;
+RestartB2G.prototype.retry = noop;
 
 /**
  * Report the results for an individual test run
  * @returns {Promise}
  */
-Reboot.prototype.handleRun = function() {
-  var results = this.format(this.results, 'Reboot', 'deviceReboot');
+RestartB2G.prototype.handleRun = function() {
+  var results = this.format(this.results, 'RestartB2G', 'deviceB2GStart');
   return this.report(results);
 };
 
-module.exports = Reboot;
+module.exports = RestartB2G;
