@@ -4,4 +4,4 @@ export PATH=$node_path:$PATH
 
 Xvfb :99 &
 export DISPLAY=:99
-make
+make test

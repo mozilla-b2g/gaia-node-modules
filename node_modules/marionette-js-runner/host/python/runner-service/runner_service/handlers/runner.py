@@ -13,13 +13,17 @@ from mozrunner import (
     B2GEmulatorRunner
 )
 
+# We log over a special pipe (fd3) which node knows to hook up.
+GECKO_LOG_FD = 3
+
 class MozrunnerHandler(object):
     __metaclass__ = ABCMeta
     runner = None
 
     def __init__(self, symbols_path=None, *args, **kwargs):
+        fd = os.fdopen(GECKO_LOG_FD, 'a')
         process_args = {
-            'stream': sys.stdout,
+            'stream': fd,
             'onFinish': self.on_finish
         }
 
@@ -50,8 +54,7 @@ class MozrunnerHandler(object):
         pass
 
     def on_finish(self):
-        if self.runner:
-            self.runner.check_for_crashes()
+        pass
 
     def cleanup(self):
         if self.runner:

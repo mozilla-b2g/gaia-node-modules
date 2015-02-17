@@ -44,7 +44,6 @@ def cli(args=sys.argv[1:]):
     server_thread.deamon = True
     server.running = True
     server_thread.start()
-    print('wootbar', args.path)
 
 if __name__ == '__main__':
     sys.exit(cli())

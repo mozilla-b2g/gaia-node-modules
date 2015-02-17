@@ -1,5 +1,5 @@
 // Test here is only to test SIGINT functionality.
-marionette('stay blocked', {}, function() {
+marionette('stay blocked', function() {
   var client = marionette.client();
 
   test('block', function() {
