@@ -72,7 +72,7 @@ RestartB2G.prototype.testRun = function() {
           debug('Received performance entry `%s` for %s',
             entry.name, entry.context);
 
-          if (entry.context !== 'System') {
+          if (entry.context !== 'system.gaiamobile.org') {
             return;
           }
 
