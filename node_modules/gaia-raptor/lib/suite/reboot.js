@@ -54,7 +54,7 @@ Reboot.prototype.reboot = function() {
       return runner.device.util.reboot();
     })
     .then(function(time) {
-      return runner.device.log.mark('deviceReboot@System', time);
+      return runner.device.log.mark('deviceReboot', time);
     });
 };
 
@@ -86,7 +86,7 @@ Reboot.prototype.testRun = function() {
           debug('Received performance entry `%s` for %s',
             entry.name, entry.context);
 
-          if (entry.context !== 'System') {
+          if (entry.context !== 'system.gaiamobile.org') {
             return;
           }
 

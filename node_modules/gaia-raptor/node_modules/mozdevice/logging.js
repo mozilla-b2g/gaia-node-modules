@@ -115,8 +115,9 @@ Logging.prototype.clear = function() {
  * @returns {Promise}
  */
 Logging.prototype.mark = function(name, time) {
-  var mark = util.format('Performance Entry: mark|%s|0|0|%s', name, time);
-  return this.info(mark);
+  var mark = util.format(
+    'Performance Entry: system.gaiamobile.org|mark|%s|0|0|%s', name, time);
+  return this.info('PerformanceTiming', mark);
 };
 
 /**
