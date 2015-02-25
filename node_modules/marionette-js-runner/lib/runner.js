@@ -66,6 +66,9 @@ RemoteHost.prototype = {
   createSession: function(profileConfig, options) {
     id = 'session-' + uuid.v4();
     options = assign({}, this.runner.host.options, options);
+    if ('port' in profileConfig) {
+      options.port = profileConfig.port;
+    }
 
     var session = this.runner.host.module.createSession(
       this.instance,
