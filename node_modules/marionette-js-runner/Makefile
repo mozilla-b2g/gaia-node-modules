@@ -14,13 +14,7 @@ clean:
 	rm -rf b2g/ node_modules/ venv/
 
 .PHONY: test
-test: default lint test-unit test-integration
-
-.PHONY: lint
-lint:
-	gjslint --recurse . \
-		--disable "220,225" \
-		--exclude_directories "api-design,b2g,examples,host,node_modules,venv"
+test: default test-unit test-integration
 
 .PHONY: test-integration
 test-integration:

@@ -1,6 +1,6 @@
 var fsPath = require('path');
 
-module.exports = function requireResovle(path) {
+module.exports = function requireResolve(path) {
   try {
     return require(path);
   } catch (e) {

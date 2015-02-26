@@ -46,6 +46,13 @@ suite('mocha integration', function() {
   var tests = [
     // this also tests picking up mocha.opts
     ['test', ['--reporter', 'spec']],
+    ['test', [
+      '--reporter',
+      fsPath.resolve(
+        __dirname,
+        '/../../node_modules/mocha/lib/reporters/spec'
+      )
+    ]],
     ['pending', ['--reporter', 'spec']],
     ['with-helper', [
         '--require', fsPath.resolve(__dirname + '/../fixtures/helper.js'),

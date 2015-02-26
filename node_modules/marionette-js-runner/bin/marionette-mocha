@@ -10,6 +10,22 @@ var requireResolve = require('../lib/require_resolve');
 
 var OPTS_FILE = 'marionette-mocha.opts';
 
+var argv = ['test/', 'tests/', '.'].reduce(function(argv, path) {
+  var optsFile = fsPath.join(path, OPTS_FILE);
+  if (!fs.existsSync(optsFile)) {
+    return argv;
+  }
+
+  argv.splice.apply(
+    argv,
+    [2, 0].concat(require('../lib/optsfileparser')(optsFile))
+  );
+
+  return argv;
+}, process.argv);
+
+var requireReporter = require('../lib/require_reporter').bind(null, argv);
+
 var parser = new ArgumentParser({
   version: require('../package').version,
   description: 'Marionette JS Runner',
@@ -77,20 +93,6 @@ parser.addArgument(['--marionette-capabilities'], {
   dest: 'desiredCapabilities',
   help: 'Path tp marionette desired capabilities file (*.json)'
 });
-
-var argv = ['test/', 'tests/', '.'].reduce(function(argv, path) {
-  var optsFile = fsPath.join(path, OPTS_FILE);
-  if (!fs.existsSync(optsFile)) {
-    return argv;
-  }
-
-  argv.splice.apply(
-    argv,
-    [2, 0].concat(require('../lib/optsfileparser')(optsFile))
-  );
-
-  return argv;
-}, process.argv);
 
 function main(argv) {
   // Initial parser pass to pick up the hosts... This generally won't fail except
@@ -172,20 +174,6 @@ function showMochaHelp() {
   );
 
   proc.once('exit', process.exit);
-}
-
-/**
-Helper to import the mocha reporters...
-*/
-function requireReporter(path) {
-  var reporter;
-  try {
-    reporter = require(argv.reporter);
-  } catch (e) {
-    reporter = require('mocha/lib/reporters/' + (path || 'dot'));
-  }
-
-  return reporter;
 }
 
 /**
