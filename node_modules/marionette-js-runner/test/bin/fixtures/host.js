@@ -1,10 +1,7 @@
-function Host(options) {
-  this.options = options;
-}
+var Promise = require('promise');
+var assert = require('assert');
 
-Host.metadata = {};
-
-Host.help = {
+exports.help = {
   group: {
     title: 'CUSTOM XFOO',
     description: 'CUSTOM DESC'
@@ -18,11 +15,17 @@ Host.help = {
   }
 };
 
-Host.prototype = {
-  start: function(callback) {
-    // magic process exit number to indicate that this file was loaded.
-    process.exit(this.options.code);
+var expectedHost = {
+  destroy: function() {
+    return Promise.resolve();
   }
 };
+module.exports.createHost = function() {
+  return Promise.resolve(expectedHost);
+};
 
-module.exports = Host;
+module.exports.createSession = function(host, profile, opts) {
+  assert.equal(host, expectedHost);
+  process.exit(opts.code);
+  return Promise.resolve();
+};

@@ -9,11 +9,21 @@ var Promise = require('promise');
 var RETRIES = 100;
 var RETRY_TIMER = 150;
 
+function PythonError(msg) {
+  Error.call(msg);
+  this.name = 'python_error';
+}
+
+PythonError.prototype = {
+  __proto__: Error.prototype
+}
+
 module.exports = function request(socketPath, path, json, retry) {
   retry = retry || 0;
-  var body = JSON.stringify(json);
+  var body = JSON.stringify(json || {});
 
   return new Promise(function(accept, reject) {
+    debug('issue request', socketPath, path, json);
     var req = http.request({
       socketPath: socketPath,
       method: 'POST',
@@ -50,9 +60,12 @@ module.exports = function request(socketPath, path, json, retry) {
       });
 
       res.on('end', function() {
+        debug(res.statusCode, data);
         var json = JSON.parse(data);
         if (res.statusCode < 200 || res.statusCode > 299) {
-          reject(new Error(json.message));
+          var err = new PythonError(json.message);
+          err.stack = json.stack;
+          reject(err);
         } else {
           accept(json);
         }
