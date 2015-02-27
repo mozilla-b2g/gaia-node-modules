@@ -5,7 +5,7 @@
 # TODO: figure out what the right version of python is
 echo "checking python version"
 
-PYTHON_VERSION=2.7.5
+PYTHON_VERSION=2.7.3
 
 function notify_sudo {
   if [ "$SUDO_NOTIFY" = "1" ]; then
