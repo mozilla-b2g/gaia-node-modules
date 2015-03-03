@@ -2,7 +2,15 @@ var Command = require('./command');
 var Logging = require('./logging');
 var Input = require('./input');
 var Util = require('./util');
+var path = require('path');
+var merge = require('deepmerge');
 var config = require('./config.json');
+
+if (process.env.MOZDEVICE_CONFIG) {
+  config = merge(config,
+    require(path.resolve(process.cwd(), process.env.MOZDEVICE_CONFIG)));
+}
+
 var devices = config.devices;
 
 // Regular expression for extracting adb property output
