@@ -8,7 +8,9 @@ var request = require('./lib/request');
 var assert = require('assert');
 var _ = require('lodash');
 
-var VENV = __dirname + '/../venv';
+var VENV = 'VIRTUALENV_PATH' in process.env ?
+  process.env.VIRTUALENV_PATH :
+  __dirname + '/../venv';
 
 /**
 Wrapper for spawning a python process which expects a venv with particular

@@ -1,5 +1,10 @@
 #!/bin/bash -e
 
+if [ ! -z "$VIRTUALENV_EXISTS" ]; then
+  # If virtualenv already exists then we don't have to setup.
+  return
+fi
+
 # TODO: isntall virtual env if they dont have it
 # TODO: install the right version of python of they don't have it
 # TODO: figure out what the right version of python is
