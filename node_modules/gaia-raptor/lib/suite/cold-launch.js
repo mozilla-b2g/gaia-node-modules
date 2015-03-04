@@ -11,6 +11,8 @@ var homescreenConfig = require('../../dist/homescreens.json');
 var GAIA_MIN_ICONS_PER_ROW = 3;
 var GAIA_MIN_ROW_HEIGHT_FACTOR = 3.8;
 var GAIA_MAX_ROW_HEIGHT_FACTOR = 5;
+var GAIA_MIN_ICON_DISTANCE = 36;
+var GAIA_MAX_ICON_DISTANCE = 38;
 var VERTICAL_CONTEXT = 'verticalhome.gaiamobile.org';
 
 /**
@@ -78,15 +80,23 @@ ColdLaunch.prototype.setCoordinates = function() {
   var entryPoint = this.entryPoint;
 
   var columns = homescreenConfig.preferences['grid.cols'];
+
+  // The dimensions we receive from device.config are already the result
+  // of an applied device pixel ratio. Therefore any calculations involving this
+  // deviceWidth SHOULD NOT also use devicePixelRatio.
   var deviceWidth = this.device.config.dimensions[0];
   var devicePixelRatio = this.device.pixelRatio;
+
   var gridOrigin = this.GRID_ORIGIN_Y * devicePixelRatio;
   var columnWidth = deviceWidth / columns;
+  var iconDistance = (columns === GAIA_MIN_ICONS_PER_ROW ?
+    GAIA_MIN_ICON_DISTANCE : GAIA_MAX_ICON_DISTANCE) * devicePixelRatio;
   var rowHeightFactor = columns === GAIA_MIN_ICONS_PER_ROW ?
     GAIA_MIN_ROW_HEIGHT_FACTOR : GAIA_MAX_ROW_HEIGHT_FACTOR;
-  var rowHeight = (deviceWidth / rowHeightFactor) * devicePixelRatio;
+  var rowHeight = deviceWidth / rowHeightFactor;
   var ordinalX = columnWidth / 2;
   var ordinalY = gridOrigin + rowHeight / 2;
+
   var appIndex = null;
 
   // Walk through the config apps until we find one matching the current app
@@ -116,7 +126,7 @@ ColdLaunch.prototype.setCoordinates = function() {
   var column = appIndex % columns;
 
   this.appX = ordinalX + columnWidth * column;
-  this.appY = ordinalY + rowHeight * row;
+  this.appY = ordinalY + (iconDistance + rowHeight) * row;
 };
 
 /**
