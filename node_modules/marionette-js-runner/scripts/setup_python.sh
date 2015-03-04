@@ -2,7 +2,7 @@
 
 if [ ! -z "$VIRTUALENV_EXISTS" ]; then
   # If virtualenv already exists then we don't have to setup.
-  return
+  exit
 fi
 
 # TODO: isntall virtual env if they dont have it
