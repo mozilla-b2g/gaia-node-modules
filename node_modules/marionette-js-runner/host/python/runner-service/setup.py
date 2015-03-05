@@ -11,8 +11,8 @@ except ImportError:
 
 PACKAGE_VERSION = '0.2'
 
-deps = ['mozrunner == 6.6',
-        'mozprofile == 0.21']
+deps = ['mozrunner >= 6.6',
+        'mozprofile >= 0.21']
 
 setup(name='gaia-runner-service',
       version=PACKAGE_VERSION,
