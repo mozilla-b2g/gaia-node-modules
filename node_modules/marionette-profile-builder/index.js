@@ -27,7 +27,7 @@ function mergeOptions(a, b) {
   for (key in b) {
     // when both a and b have a property that is an object do a merge
     // of those properties rather then an override.
-    if (typeof a[key] === 'object' || typeof a[key] === 'object') {
+    if (typeof a[key] === 'object' && typeof b[key] === 'object') {
       result[key] = mergeOptions(a[key], b[key]);
       continue;
     }
