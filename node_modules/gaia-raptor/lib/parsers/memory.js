@@ -1,5 +1,5 @@
 var Parser = require('./parser');
-var TOKEN = 'Memory Entry: ';
+var TOKEN = 'PerformanceMemory';
 
 /**
  * Determine whether a log entry is one for an application's memory entry
@@ -7,31 +7,22 @@ var TOKEN = 'Memory Entry: ';
  * @returns {boolean}
  */
 var matcher = function(item) {
-  return item.message.indexOf(TOKEN) !== -1;
+  return item.tag === TOKEN;
 };
 
 /**
- * Parse an ADB log entry and extract the application's memory information, i.e.
- * USS, PSS, and RSS
+ * Parse an ADB log entry and extract an application's memory entry
  * @param {object} item ADB log entry
- * @returns {{context: String, name: String, uss: Number, pss: Number, rss: Number}}
+ * @returns {{context: String, name: String, value: Number, entryType: String}}
  */
 var parser = function(item) {
-  var index = item.message.indexOf(TOKEN) + TOKEN.length;
-  var parts = item.message
-    .substr(index)
-    .split('|');
-  var context = parts[0];
-  var memoryParts = parts[1]
-    .replace(context, '')
-    .split(/\s+/g);
+  var parts = item.message.split('|');
 
   return {
-    context: context,
-    name: 'fullyLoadedMemory',
-    uss: parseFloat(memoryParts[5]),
-    pss: parseFloat(memoryParts[6]),
-    rss: parseFloat(memoryParts[7])
+    context: parts[0],
+    name: parts[1],
+    value: parseFloat(parts[2]) * 1024 * 1024,
+    entryType: 'memory'
   };
 };
 

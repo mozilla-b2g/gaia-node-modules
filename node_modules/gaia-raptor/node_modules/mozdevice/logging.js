@@ -128,10 +128,20 @@ Logging.prototype.mark = function(name, time) {
  * @returns {Promise}
  */
 Logging.prototype.memory = function(processName, application) {
-  var message = util.format('Memory Entry: %s|$(b2g-info | grep "%s")',
-    application, processName);
+  var logging = this;
 
-  return this.info(message);
+  return new Command()
+    .env('ANDROID_SERIAL', this.serial)
+    .adbShell('b2g-info')
+    .pipe('grep "' + processName + '"')
+    .exec()
+    .then(function(output) {
+      var parts = output.split(/\s+/g);
+
+      logging.info('PerformanceMemory', application + '|uss|' + parts[6]);
+      logging.info('PerformanceMemory', application + '|pss|' + parts[7]);
+      logging.info('PerformanceMemory', application + '|rss|' + parts[8]);
+    });
 };
 
 /**

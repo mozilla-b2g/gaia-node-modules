@@ -197,11 +197,12 @@ ColdLaunch.prototype.waitForFullyLoaded = function() {
     dispatcher.on('performanceentry', function handler(entry) {
       debug('Received performance entry `%s` in %s', entry.name, entry.context);
 
-      // Throw away performance entries that don't match the application we are
-      // testing
+      // Ignore performance entries that don't match the app we are testing
       if (entry.context !== runner.manifestURL) {
         return;
       }
+
+      entry.appName = runner.appName;
 
       if (!runner.appPid && entry.pid !== runner.homescreenPid) {
         debug('Capturing application PID: %d', entry.pid);
@@ -219,20 +220,39 @@ ColdLaunch.prototype.waitForFullyLoaded = function() {
 };
 
 /**
- * Resolve when a memory entry has been received for the launched application
+ * Resolve when all memory entries are received for the launched application
  * @returns {Promise}
  */
-ColdLaunch.prototype.waitForMemoryEntry = function() {
+ColdLaunch.prototype.waitForMemory = function() {
+  var runner = this;
   var dispatcher = this.dispatcher;
+  var hasUss = false;
+  var hasPss = false;
+  var hasRss = false;
 
   return new Promise(function(resolve) {
-    dispatcher.once('memoryentry', function(entry) {
-      if (entry && entry.uss) {
-        debug('Received memory entry USS:%d | PSS:%d | RSS:%s',
-          entry.uss, entry.pss, entry.rss);
+    dispatcher.on('memoryentry', function listener(entry) {
+      debug('Received %s memory entry: %dMB',
+        entry.name.toUpperCase(), entry.value / 1024 / 1024);
+
+      if (entry.context !== runner.manifestURL) {
+        return;
       }
 
-      resolve();
+      entry.appName = runner.appName;
+
+      if (entry.name === 'uss') {
+        hasUss = true;
+      } else if (entry.name === 'pss') {
+        hasPss = true;
+      } else if (entry.name === 'rss') {
+        hasRss = true;
+      }
+
+      if (hasUss && hasPss && hasRss) {
+        dispatcher.removeListener('memoryentry', listener);
+        resolve();
+      }
     });
   });
 };
@@ -285,7 +305,7 @@ ColdLaunch.prototype.testRun = function() {
     runner.launch();
   }, 6000);
 
-  return this.waitForMemoryEntry();
+  return this.waitForMemory();
 };
 
 /**
@@ -331,7 +351,7 @@ ColdLaunch.prototype.handleRun = function() {
 
   var results = this.format(this.results.filter(function(entry) {
     return entry.context === manifestURL;
-  }), 'ColdLaunch', 'appLaunch');
+  }), 'coldlaunch', 'appLaunch');
 
   return this.report(results);
 };
