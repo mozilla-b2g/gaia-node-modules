@@ -113,7 +113,7 @@ Reboot.prototype.retry = noop;
  * @returns {Promise}
  */
 Reboot.prototype.handleRun = function() {
-  var results = this.format(this.results, 'Reboot', 'deviceReboot');
+  var results = this.format(this.results, 'reboot', 'deviceReboot');
   return this.report(results);
 };
 

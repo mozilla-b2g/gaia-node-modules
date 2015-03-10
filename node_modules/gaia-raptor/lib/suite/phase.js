@@ -7,6 +7,8 @@ var helpers = require('../helpers');
 var MozDevice = require('mozdevice');
 var report = require('../reporter');
 
+var TAG_IDENTIFIER = 'persist.raptor.';
+
 /**
  * Base suite runner. Functionality which is common to all runners should be
  * accessible here
@@ -286,44 +288,6 @@ Phase.prototype.start = function() {
 };
 
 /**
- * For a given result entry, create a reportable object which represents a point
- * of a performance marker or measure. Captures any environment metadata
- * supplied for persistence.
- * @param {object} entry
- * @param {object} launch result entry which marked the launch time of the app
- * @returns {object}
- */
-Phase.prototype.createTimePoint = function(entry, startEntry) {
-  return {
-    name: entry.name,
-    time: this.time,
-    epoch: entry.epoch,
-    value: entry.entryType === 'mark' ?
-      entry.epoch - startEntry.epoch : entry.duration,
-    gaiaRev: this.device.gaiaRevision,
-    geckoRev: this.device.geckoRevision
-  };s
-};
-
-/**
- * For a given result entry, create a reportable object which represents a point
- * of memory data. Captures any environment metadata supplied for persistence.
- * @param {object} entry result entry
- * @returns {object}
- */
-Phase.prototype.createMemoryPoint = function(entry) {
-  return {
-    name: entry.name,
-    time: this.time,
-    uss: entry.uss,
-    pss: entry.pss,
-    rss: entry.rss,
-    gaiaRev: this.device.gaiaRevision,
-    geckoRev: this.device.geckoRevision
-  };
-};
-
-/**
  * Write the given entries to a format suitable for reporting
  * @param {Array} entries
  * @param {String} suite
@@ -332,9 +296,10 @@ Phase.prototype.createMemoryPoint = function(entry) {
  */
 Phase.prototype.format = function(entries, suite, startMark) {
   var runner = this;
+  var device = runner.device;
   var results = {};
-  var seriesFormat = 'Suites.%s.%s.%s';
-  var deviceAction, deviceActionIndex;
+  var deviceAction = null;
+  var deviceActionIndex = null;
 
   // Find the deviceAction and its location in the entries
   entries.every(function(entry, index) {
@@ -351,10 +316,36 @@ Phase.prototype.format = function(entries, suite, startMark) {
   entries.splice(deviceActionIndex, 1);
 
   entries.forEach(function(entry) {
-    var series = util.format(seriesFormat, suite, entry.context, entry.name);
-    var point = entry.uss ?
-      runner.createMemoryPoint(entry) :
-      runner.createTimePoint(entry, deviceAction);
+    var name = entry.name;
+    var series = suite + '.' + name;
+    var point = {
+      time: runner.time,
+      suite: suite,
+      entryType: entry.entryType,
+      context: entry.context,
+      gaiaRevision: device.gaiaRevision,
+      geckoRevision: device.geckoRevision
+    };
+
+    if (entry.appName) {
+      point.appName = entry.appName;
+    }
+
+    if (entry.value) {
+      point.value = entry.value;
+    } else {
+      point.epoch = entry.epoch;
+      point.value = entry.entryType === 'mark' ?
+        entry.epoch - deviceAction.epoch : entry.duration;
+    }
+
+    Object
+      .keys(runner.device.properties)
+      .forEach(function(key) {
+        if (key.indexOf(TAG_IDENTIFIER) === 0) {
+          point[key.slice(TAG_IDENTIFIER.length)] = device.properties[key];
+        }
+      });
 
     if (!results[series]) {
       results[series] = [];

@@ -99,7 +99,7 @@ RestartB2G.prototype.retry = noop;
  * @returns {Promise}
  */
 RestartB2G.prototype.handleRun = function() {
-  var results = this.format(this.results, 'RestartB2G', 'deviceB2GStart');
+  var results = this.format(this.results, 'restartb2g', 'deviceB2GStart');
   return this.report(results);
 };
 
