@@ -1,6 +1,6 @@
-language: node_js
+language: python
 before_install:
   - "sudo easy_install http://closure-linter.googlecode.com/files/closure_linter-latest.tar.gz"
-script: "make ci"
-node_js:
-  - "0.10"
+script: "./test/ci.sh"
+python:
+  - "2.7"
