@@ -6,6 +6,8 @@ var Dispatcher = require('../dispatcher');
 var helpers = require('../helpers');
 var MozDevice = require('mozdevice');
 var report = require('../reporter');
+var stats = require('stats-lite');
+require('console.table');
 
 var TAG_IDENTIFIER = 'persist.raptor.';
 
@@ -26,6 +28,7 @@ var Phase = function(options) {
 
   this.runs = [];
   this.results = [];
+  this.formattedRuns = [];
   this.time = Date.now();
   this.options = merge({
     timeout: options.emulator ? 150 * 1000 : 60 * 1000,
@@ -331,7 +334,7 @@ Phase.prototype.format = function(entries, suite, startMark) {
       point.appName = entry.appName;
     }
 
-    if (entry.value) {
+    if ('value' in entry) {
       point.value = entry.value;
     } else {
       point.epoch = entry.epoch;
@@ -354,7 +357,56 @@ Phase.prototype.format = function(entries, suite, startMark) {
     results[series].push(point);
   });
 
+  this.formattedRuns.push(results);
+
   return results;
+};
+
+/**
+ * Output aggregate statistical information for all suite runs to the console
+ */
+Phase.prototype.logStats = function() {
+  var results = {};
+  var metrics = [];
+
+  this.formattedRuns.forEach(function(run) {
+    Object
+      .keys(run)
+      .forEach(function(key) {
+        if (!results[key]) {
+          results[key] = [];
+        }
+
+        var entry = run[key][0];
+        var value = entry.value;
+
+        if (entry.entryType === 'memory') {
+          value = value / 1024 / 1024;
+        }
+
+        results[key].push(value);
+      });
+  });
+
+  Object
+    .keys(results)
+    .forEach(function(key) {
+      var values = results[key];
+      var percentile = stats.percentile(values, 0.95);
+
+      metrics.push({
+        Metric: key,
+        Mean: stats.mean(values).toFixed(3),
+        Median: stats.median(values).toFixed(3),
+        Min: Math.min.apply(Math, values).toFixed(3),
+        Max: Math.max.apply(Math, values).toFixed(3),
+        StdDev: stats.stdev(values).toFixed(3),
+        p95: percentile ? percentile.toFixed(3) : 'n/a'
+      });
+    });
+
+  console.log('');
+  console.table(metrics);
 };
 
 module.exports = Phase;
