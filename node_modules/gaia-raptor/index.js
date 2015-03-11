@@ -57,7 +57,10 @@ var raptor = function(options, callback) {
   // Skip parsing for application paths if our runner doesn't require it
   if (!options.apps && !process.env.APP && !process.env.APPS) {
     createRunner(options, callback)
-      .on('end', complete);
+      .on('end', function() {
+        currentRunner.logStats();
+        complete();
+      });
     return;
   }
 
@@ -86,7 +89,10 @@ var raptor = function(options, callback) {
     // Once this suite runner has completed all its runs and the test runner is
     // done working with this app, move on to the next application's test runs
     createRunner(settings, callback)
-      .on('end', next);
+      .on('end', function() {
+        currentRunner.logStats();
+        next();
+      });
   }, complete);
 };
 
