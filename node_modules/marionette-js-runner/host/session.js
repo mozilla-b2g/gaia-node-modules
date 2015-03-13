@@ -53,9 +53,12 @@ Session.prototype = {
         // If for some reason stackwalk implodes then show some useful output.
         if (result.stackwalk_retcode !== 0) {
           var msg = 'Crash detected but error running stackwalk\n';
-          result.stackwalk_errors.forEach(function(str) {
-            msg += indent(str, ' ', 2) + '\n';
-          });
+
+          if (Array.isArray(msg.stackwalk_errors)) {
+            result.stackwalk_errors.forEach(function(str) {
+              msg += indent(str, ' ', 2) + '\n';
+            });
+          }
 
           var error = new Error(msg);
           error.name = 'ProcessCrash';

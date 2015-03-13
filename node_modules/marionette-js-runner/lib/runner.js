@@ -191,7 +191,7 @@ Runner.prototype = {
     var promise = this.host.module.createHost().
       then(function(host) {
         if (host.log) {
-          host.log.pipe(this.hostLog);
+          host.log.pipe(this.hostLog, { end: false });
         }
         var remote = new RemoteHost(this, host);
         this.hosts.push(remote);
