@@ -9,7 +9,7 @@ try:
 except ImportError:
     pass
 
-PACKAGE_VERSION = '0.2'
+PACKAGE_VERSION = '0.3'
 
 deps = ['mozrunner >= 6.6',
         'mozprofile >= 0.21']
