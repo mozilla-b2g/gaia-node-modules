@@ -188,16 +188,16 @@ Runner.prototype = {
 
   createHost: function() {
     var id = 'host-' + uuid.v4();
-    var promise = this.host.module.createHost().
-      then(function(host) {
-        if (host.log) {
-          host.log.pipe(this.hostLog, { end: false });
-        }
-        var remote = new RemoteHost(this, host);
-        this.hosts.push(remote);
-        this._creatingHosts.splice(this._creatingHosts.indexOf(promise), 1);
-        return remote;
-      }.bind(this));
+    var promise = this.host.module.createHost().then(function(host) {
+      if (host.log) {
+        host.log.pipe(this.hostLog, { end: false });
+      }
+
+      var remote = new RemoteHost(this, host);
+      this.hosts.push(remote);
+      this._creatingHosts.splice(this._creatingHosts.indexOf(promise), 1);
+      return remote;
+    }.bind(this));
 
     this._creatingHosts.push(promise);
 
@@ -224,7 +224,11 @@ Runner.prototype = {
         Object.keys(this.hosts).length === 0,
         'all hosts removed.'
       );
-    }.bind(this));
+    }.bind(this))
+    .catch(function(error) {
+      console.error('One or more hosts encountered issues during shutdown.');
+      console.error(error.toString());
+    });
   },
 
   /**

@@ -46,6 +46,12 @@ function Host(socketPath, process, log) {
   this.sessions = {};
   this.pendingSessions = [];
 
+  this.dead = false;
+  this.onerror = this.onerror.bind(this);
+  this.onexit = this.onexit.bind(this);
+  this.process.on('error', this.onerror);
+  this.process.on('exit', this.onexit);
+
   EventEmitter.call(this);
 }
 module.exports = Host;
@@ -76,7 +82,18 @@ Host.prototype = {
         return Promise.reject(new Error('Not all sessions were deleted!'));
       }
 
-      return new Promise(function(accept) {
+      if (this.dead) {
+        return Promise.resolve();
+      }
+
+      return new Promise(function(accept, reject) {
+        this.process.removeListener('error', this.onerror);
+        this.process.removeListener('exit', this.onexit);
+        this.process.once('error', function(error) {
+          this.process.removeListener('exit', accept);
+          reject(error);
+        }.bind(this));
+
         this.process.once('exit', accept);
         this.process.kill();
       }.bind(this));
@@ -88,6 +105,19 @@ Host.prototype = {
   */
   request: function(path, options) {
     return request(this.socketPath, path, options);
+  },
+
+  onerror: function(error) {
+    console.error('Python process error!');
+    console.error(error.toString());
+    this.process.kill();
+    this.dead = true;
+  },
+
+  onexit: function(code, signal) {
+    console.error('Python process exited unexpectedly!');
+    console.error('[code = ' + code + ', signal = ' + signal + ']');
+    this.dead = true;
   }
 };
 
