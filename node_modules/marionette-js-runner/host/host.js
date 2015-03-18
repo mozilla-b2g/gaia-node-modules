@@ -91,6 +91,7 @@ Host.prototype = {
         this.process.removeListener('exit', this.onexit);
         this.process.once('error', function(error) {
           this.process.removeListener('exit', accept);
+          console.error('Python process error during shutdown!');
           reject(error);
         }.bind(this));
 
@@ -114,9 +115,9 @@ Host.prototype = {
     this.dead = true;
   },
 
-  onexit: function(code, signal) {
+  onexit: function(exit) {
     console.error('Python process exited unexpectedly!');
-    console.error('[code = ' + code + ', signal = ' + signal + ']');
+    console.error('[code = ' + exit.code + ', signal = ' + exit.signal + ']');
     this.dead = true;
   }
 };
@@ -130,10 +131,15 @@ Host.create = function() {
   );
 
   var failOnChildError = new Promise(function(accept, reject) {
-    pythonChild.addListener('error', reject);
+    function onError(error) {
+      console.error('Python process error during initial connect!');
+      reject(error);
+    }
+
+    pythonChild.once('error', onError);
     pythonChild.once('exit', function(exit) {
       // Ensure we don't call error callback somehow...
-      pythonChild.removeListener('error', reject);
+      pythonChild.removeListener('error', onError);
       reject(new Error(
         'Unexpected exit during connect: ' +
         'signal = ' + exit.signal + ', ' +
