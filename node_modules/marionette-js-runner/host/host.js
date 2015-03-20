@@ -127,7 +127,7 @@ Host.create = function() {
   var pythonChild = spawnVirtualEnv(
     'gaia-integration',
     ['--path=' + socketPath],
-    { stdio: [0, 1, 2, 'pipe'] }
+    { stdio: ['pipe', 'pipe', 'pipe', 'pipe'] }  // Swallow python output
   );
 
   var failOnChildError = new Promise(function(accept, reject) {
