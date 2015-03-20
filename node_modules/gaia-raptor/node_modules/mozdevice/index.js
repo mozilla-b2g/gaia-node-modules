@@ -41,7 +41,8 @@ Device.prototype.setSerialVerified = function() {
 
   device.serial = null;
 
-  return new Command('adb devices')
+  return new Command()
+    .adb('devices')
     .exec()
     .then(function(output) {
       var lines = output.split('\n').slice(1, -2);

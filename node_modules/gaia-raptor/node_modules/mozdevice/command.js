@@ -2,6 +2,9 @@ var exec = require('child_process').exec;
 var Promise = require('promise');
 var debug = require('debug')('mozdevice:command');
 
+var ADB_HOST = process.env.ADB_HOST;
+var ADB_PORT = process.env.ADB_PORT;
+
 /**
  * API for building up and executing shell commands
  * @param {string} [initialCommand] An optional first command
@@ -27,7 +30,19 @@ Command.prototype.append = function(content) {
  * @returns {Command}
  */
 Command.prototype.adb = function(command) {
-  this.builder.push('adb ' + command);
+  var commandBuilder = ['adb'];
+
+  if (ADB_HOST) {
+    commandBuilder.push('-H ' + ADB_HOST);
+  }
+
+  if (ADB_PORT) {
+    commandBuilder.push('-P ' + ADB_PORT);
+  }
+
+  commandBuilder.push(command);
+  this.builder.push(commandBuilder.join(' '));
+
   return this;
 };
 
@@ -37,8 +52,7 @@ Command.prototype.adb = function(command) {
  * @returns {Command}
  */
 Command.prototype.adbShell = function(command) {
-  this.builder.push("adb shell '" + command + "'");
-  return this;
+  return this.adb("shell '" + command + "'");
 };
 
 /**

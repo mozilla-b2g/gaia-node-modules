@@ -5,6 +5,9 @@ var logcat = require('adbkit-logcat');
 var Command = require('./command');
 var debug = require('debug')('mozdevice:logging');
 
+var ADB_HOST = process.env.ADB_HOST;
+var ADB_PORT = process.env.ADB_PORT;
+
 // Cache the connection to logcat so we can re-use for additional MozDevices
 var currentProcess;
 var currentStream;
@@ -42,8 +45,6 @@ Logging.prototype.write = function(priority, tag, message) {
     message = tag;
     tag = 'GeckoConsole';
   }
-
-  debug('Writing to log');
 
   var command = util.format('log -p %s -t %s "%s"', priority, tag, message);
   return this.adbShell(command);
@@ -148,12 +149,32 @@ Logging.prototype.memory = function(processName, application) {
  * Spawn a connection to ADB logcat and set a read-stream for entries
  */
 Logging.prototype.start = function() {
-  if (!currentProcess) {
-    currentProcess = spawn('adb', ['logcat', '-B']);
-    currentStream = logcat.readStream(currentProcess.stdout);
+  if (currentProcess) {
+    this.stream = currentStream;
+    return;
   }
 
-  this.stream = currentStream;
+  var args = [];
+  var serial = this.serial;
+
+  if (ADB_HOST) {
+    args.push('-H');
+    args.push(ADB_HOST);
+  }
+
+  if (ADB_PORT) {
+    args.push('-P');
+    args.push(ADB_PORT);
+  }
+
+  args.push('logcat');
+  args.push('-B');
+
+  currentProcess = spawn('adb', args, {
+    env: { ANDROID_SERIAL: serial }
+  });
+
+  this.stream = currentStream = logcat.readStream(currentProcess.stdout);
 };
 
 /**
