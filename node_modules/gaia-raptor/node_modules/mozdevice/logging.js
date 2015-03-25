@@ -156,6 +156,9 @@ Logging.prototype.start = function() {
 
   var args = [];
   var serial = this.serial;
+  var env = process.env;
+
+  env.ANDROID_SERIAL = serial;
 
   if (ADB_HOST) {
     args.push('-H');
@@ -171,7 +174,7 @@ Logging.prototype.start = function() {
   args.push('-B');
 
   currentProcess = spawn('adb', args, {
-    env: { ANDROID_SERIAL: serial }
+    env: env
   });
 
   this.stream = currentStream = logcat.readStream(currentProcess.stdout);
