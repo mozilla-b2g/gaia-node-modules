@@ -28,17 +28,15 @@ var parser = function(item) {
   var parts = item.message
     .substr(index)
     .split('|');
-  var name = parts[1].indexOf('@') === -1 ?
-    [ parts[1], item.tag ] :
-    parts[1].split('@');
+  var name = parts[2].split('@');
 
   return {
-    entryType: parts[0],
+    context: name[1] || parts[0],
+    entryType: parts[1],
     name: name[0],
-    context: name[1] === 'GeckoConsole' ? 'System' : name[1],
-    startTime: parseFloat(parts[2]),
-    duration: parseFloat(parts[3]),
-    epoch: parseFloat(parts[4]),
+    startTime: parseFloat(parts[3]),
+    duration: parseFloat(parts[4]),
+    epoch: parseFloat(parts[5]),
     pid: item.pid
   };
 };
