@@ -29,7 +29,7 @@ var Phase = function(options) {
   this.runs = [];
   this.results = [];
   this.formattedRuns = [];
-  this.time = Date.now();
+  this.time = options.time || Date.now();
   this.options = merge({
     timeout: options.emulator ? 150 * 1000 : 60 * 1000,
     retries: 1,
@@ -137,7 +137,6 @@ Phase.prototype.getDevice = function() {
         runner.dispatcher = new Dispatcher(device);
       }
 
-      runner.reportTest();
       resolve(device);
     });
   });
