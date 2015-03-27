@@ -1,6 +1,7 @@
 var runners = {
   'cold': 'cold-launch',
   'reboot': 'reboot',
+  'restart-b2g': 'restart-b2g',
   'first-time': 'first-time-launch',
   'warm': 'warm-launch'
 };
