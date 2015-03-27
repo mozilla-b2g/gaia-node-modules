@@ -12,7 +12,11 @@ env.load();
 
 var currentRunner;
 
+/**
+ * Handle any remaining logic after all suites have been completed
+ */
 var complete = function() {
+  currentRunner.reportTest();
   currentRunner.device.log.stop();
   console.log('[Test] All tests completed');
 };
@@ -52,6 +56,10 @@ var raptor = function(options, callback) {
 
   if (process.env.RAPTOR_EMULATOR) {
     options.emulator = true;
+  }
+
+  if (!options.time) {
+    options.time = Date.now();
   }
 
   // Skip parsing for application paths if our runner doesn't require it
