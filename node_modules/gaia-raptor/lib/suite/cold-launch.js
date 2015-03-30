@@ -43,7 +43,7 @@ var ColdLaunch = function(options) {
 
   this.getDevice()
     .then(function() {
-      runner.setManifestData(options.appPath);
+      runner.setApplicationMetadata(options.appPath);
       runner.registerParser(performanceParser);
       runner.registerParser(memoryParser);
       runner.capture('performanceentry');
@@ -78,6 +78,7 @@ util.inherits(ColdLaunch, Phase);
 ColdLaunch.prototype.setCoordinates = function() {
   var manifestPath = this.manifestPath;
   var entryPoint = this.entryPoint;
+  var appIndex = this.appIndex;
 
   var columns = homescreenConfig.preferences['grid.cols'];
 
@@ -96,32 +97,6 @@ ColdLaunch.prototype.setCoordinates = function() {
   var rowHeight = deviceWidth / rowHeightFactor;
   var ordinalX = columnWidth / 2;
   var ordinalY = gridOrigin + rowHeight / 2;
-
-  var appIndex = null;
-
-  // Walk through the config apps until we find one matching the current app
-  homescreenConfig.homescreens[0]
-    .every(function(app, index) {
-      if (manifestPath === app[1]) {
-        if (entryPoint) {
-          if (entryPoint === app[2]) {
-            appIndex = index;
-            return false;
-          }
-        } else {
-          appIndex = index;
-          return false;
-        }
-      }
-
-      return true;
-    });
-
-  if (appIndex === null) {
-    return this.emit('error',
-      new Error('Unable to find configured application on Homescreen'));
-  }
-
   var row = Math.floor(appIndex / columns);
   var column = appIndex % columns;
 
@@ -171,11 +146,36 @@ ColdLaunch.prototype.waitForHomescreen = function() {
  * entry point, application name, and other manifest data
  * @param appPath
  */
-ColdLaunch.prototype.setManifestData = function(appPath) {
+ColdLaunch.prototype.setApplicationMetadata = function(appPath) {
   var parts = appPath.split('/');
 
   this.manifestPath = parts[0];
   this.entryPoint = parts[1] || '';
+  this.appIndex = null;
+  var runner = this;
+
+  // Walk through the config apps until we find one matching the current app
+  homescreenConfig.homescreens[0]
+    .every(function(app, index) {
+      if (runner.manifestPath === app[1]) {
+        if (runner.entryPoint) {
+          if (runner.entryPoint === app[2]) {
+            runner.appIndex = index;
+            return false;
+          }
+        } else {
+          runner.appIndex = index;
+          return false;
+        }
+      }
+      return true;
+    });
+
+  if (runner.appIndex === null) {
+    return this.emit('error',
+      new Error('Unable to find specified application on Homescreen'));
+  }
+
   this.manifestURL = this.manifestPath + '.gaiamobile.org';
   this.manifest = this.requireManifest(path.join(
     process.cwd(), 'apps', this.manifestPath, 'manifest.webapp'));
