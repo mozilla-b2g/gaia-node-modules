@@ -124,7 +124,7 @@ Phase.prototype.getDevice = function() {
   }
 
   return new Promise(function(resolve, reject) {
-    MozDevice(function(err, device) {
+    var callback = function(err, device) {
       if (err) {
         return runner.emit('error', err);
       }
@@ -138,7 +138,11 @@ Phase.prototype.getDevice = function() {
       }
 
       resolve(device);
-    });
+    };
+
+    return process.env.ANDROID_SERIAL ?
+      MozDevice(process.env.ANDROID_SERIAL, callback) :
+      MozDevice(callback);
   });
 };
 
