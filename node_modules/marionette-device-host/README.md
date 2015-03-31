@@ -1,20 +1,22 @@
-# B2G Device host for marionette-js-runner
-
-[![Build
-Status](https://travis-ci.org/mozilla-b2g/marionette-device-host.png)](https://travis-ci.org/mozilla-b2g/marionette-device-host)
+# marionette-device-host
 
 A complete target environment for marionette using device or emulator (adb).
 
-Set RESTART_B2G to '0' in the shell environment to not restart b2g. When
-starting a test. Any other value will force restart. Either will override
-whatever is passed.
+### Usage
 
-## LICENSE
+You can set the environment variable `RESTART_B2G` to 1 or 0 in order to force
+marionette-device-host to (or not to) restart between test runs.
+
+### Versions
+
+Versions 1 and beyond should be compatible with marionette-js-runner >=1.
+For marionette-js-runner 0.x, use version 0.1.0.
+
+### LICENSE
 
 Copyright (c) 2013 Mozilla Foundation
 
-Contributors: Hubert Figuiere <hub@mozilla.com>
-              Sahaja James Lal <jlal@mozilla.com>
+Contributors: Gareth Aye <gaye@mozilla.com>, Hubert Figuiere <hub@mozilla.com>, Sahaja James Lal <jlal@mozilla.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -33,5 +35,3 @@ THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
-
-

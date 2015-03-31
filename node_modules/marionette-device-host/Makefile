@@ -1,6 +1,15 @@
+default: node_modules
+
+.PHONY: clean
+clean:
+	rm -rf node_modules/
+
+node_modules: package.json
+	npm install
+
 .PHONY: test
-test:
-	./node_modules/mocha/bin/mocha --ui tdd -t 100s test/index
+test: default
+	./node_modules/.bin/marionette-mocha test/smoke_test.js --host $(shell pwd)/index.js
 
 .PHONY: ci
 ci:
