@@ -6,7 +6,7 @@ This repository contains all of the necessary node modules for gaia. By placing 
 
 1. Create a fork of this repository.
 2. Update package.json.
-3. Update the node_modules folder by running: ```npm cache clean && npm install --ignore-scripts```
+3. Update the node_modules folder by running: ```npm cache clean && npm install --ignore-scripts --no-bin-links```
 4. Commit *everything*.
 5. Submit a pull request, tracked against a bug at: http://bugzilla.mozilla.org.  You don't need a special bug just for this change; you can reuse whatever bug is trying to fix the underlying problem.
 
