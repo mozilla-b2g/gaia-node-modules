@@ -18,6 +18,7 @@ var noop = function() {};
 var RestartB2G = function(options) {
   Phase.call(this, options);
 
+  this.title = 'Restart B2G';
   this.start();
 };
 

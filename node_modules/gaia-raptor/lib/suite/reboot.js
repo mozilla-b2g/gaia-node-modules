@@ -24,6 +24,7 @@ var Reboot = function(options) {
 
   Phase.call(this, options);
 
+  this.title = 'Reboot';
   this.start();
 };
 

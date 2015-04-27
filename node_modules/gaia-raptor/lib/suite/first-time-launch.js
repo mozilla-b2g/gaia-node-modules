@@ -11,6 +11,7 @@ var util = require('util');
 var FirstTimeLaunch = function(options) {
   Phase.call(this, options);
 
+  this.title = 'First-time Launch';
   this.start();
 };
 
