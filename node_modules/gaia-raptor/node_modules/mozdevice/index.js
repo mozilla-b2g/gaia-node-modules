@@ -104,6 +104,43 @@ Device.prototype.setProperties = function() {
 };
 
 /**
+ *
+ * @param string deviceType Device type, e.g. 'b2g', 'android'
+ * @param string model Device model to pull configuration data for
+ * @returns {object}
+ */
+Device.prototype.findConfiguration = function(deviceType, model) {
+  var key;
+
+  model = model.toUpperCase();
+
+  Object
+    .keys(devices[deviceType])
+    .some(function(device) {
+      var isMatch = device.toUpperCase() === model;
+
+      if (isMatch) {
+        key = device;
+        return true;
+      }
+
+      return false;
+    });
+
+  return devices[deviceType][key];
+};
+
+/**
+ * Set device-specific configuration data based on the model of the device
+ */
+Device.prototype.setConfiguration = function() {
+  var model = this.properties['ro.product.model'];
+
+  this.config = this.findConfiguration('b2g', model) ||
+    this.findConfiguration('android', model);
+};
+
+/**
  * Instantiate a Device API:
  * 1. Verify and set the serial for the device
  * 2. Fetch the device properties and set common values
@@ -121,9 +158,9 @@ Device.create = function(serial) {
       return device.setProperties();
     })
     .then(function() {
-      device.model = device.properties['ro.product.model'];
-      device.config = devices.b2g[device.model] ||
-        devices.android[device.model];
+      return device.setConfiguration();
+    })
+    .then(function() {
       device.pixelRatio = device.properties[device.config.densityProperty ||
         'ro.sf.lcd_density'] / 160;
       device.touchFrequency = device.config.touchFrequency || 10;

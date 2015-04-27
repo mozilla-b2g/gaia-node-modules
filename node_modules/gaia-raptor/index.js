@@ -11,14 +11,30 @@ process.setMaxListeners(0);
 env.load();
 
 var currentRunner;
+var errors = [];
 
 /**
  * Handle any remaining logic after all suites have been completed
  */
 var complete = function() {
-  currentRunner.reportTest();
-  currentRunner.device.log.stop();
-  console.log('[Test] All tests completed');
+  if (currentRunner.device) {
+    currentRunner.reportTest();
+    currentRunner.device.log.stop();
+  }
+
+  currentRunner.log('Testing complete');
+
+  if (!errors.length) {
+    return;
+  }
+
+  currentRunner.log('Error summary:');
+
+  errors.forEach(function(err) {
+    console.error('\n' + (err instanceof Error ? err.stack : err));
+  });
+
+  process.exit(1);
 };
 
 /**
@@ -28,20 +44,10 @@ var complete = function() {
  * @returns {Suite}
  */
 var createRunner = function(options, callback) {
-  var runner = new Suite(options);
-
-  currentRunner = runner;
-
-  runner.once('error', function(err) {
-    console.error(err instanceof Error ? err.stack : err);
-    process.exit(1);
-  });
-
-  runner.once('ready', function() {
-    callback(runner);
-  });
-
-  return runner;
+  return currentRunner = new Suite(options)
+    .once('ready', function() {
+      callback(currentRunner);
+    });
 };
 
 /**
@@ -65,6 +71,11 @@ var raptor = function(options, callback) {
   // Skip parsing for application paths if our runner doesn't require it
   if (!options.apps && !process.env.APP && !process.env.APPS) {
     createRunner(options, callback)
+      .on('error', function(err) {
+        errors.push(err);
+        currentRunner.log('Suite aborted due to error');
+        complete();
+      })
       .on('end', function() {
         currentRunner.logStats();
         complete();
@@ -97,6 +108,11 @@ var raptor = function(options, callback) {
     // Once this suite runner has completed all its runs and the test runner is
     // done working with this app, move on to the next application's test runs
     createRunner(settings, callback)
+      .on('error', function(err) {
+        errors.push(err);
+        currentRunner.log('Suite aborted due to error');
+        next();
+      })
       .on('end', function() {
         currentRunner.logStats();
         next();

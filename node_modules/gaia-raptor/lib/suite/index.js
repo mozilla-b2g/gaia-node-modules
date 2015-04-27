@@ -2,13 +2,12 @@ var runners = {
   'cold': 'cold-launch',
   'reboot': 'reboot',
   'restart-b2g': 'restart-b2g',
-  'first-time': 'first-time-launch',
-  'warm': 'warm-launch'
+  'first-time': 'first-time-launch'
 };
 
 /**
  * Factory to instantiate a suite runner based on the phase type, e.g. `cold`,
- * `reboot`, `first`, `warm`
+ * `reboot`, `first`, `restart-b2g`
  * @param {{
  *   phase: String
  * }} options
