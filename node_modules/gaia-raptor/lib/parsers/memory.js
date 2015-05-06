@@ -26,5 +26,4 @@ var parser = function(item) {
   };
 };
 
-
 module.exports = Parser('memoryentry', matcher, parser);

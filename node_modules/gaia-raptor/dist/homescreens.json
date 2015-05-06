@@ -13,7 +13,8 @@
       [ "apps", "music" ],
       [ "apps", "settings" ],
       [ "apps", "sms" ],
-      [ "apps", "video" ]
+      [ "apps", "video" ],
+      [ "dev_apps", "test-startup-limit" ]
     ]
   ],
   "preferences": {

@@ -153,6 +153,7 @@ ColdLaunch.prototype.setApplicationMetadata = function(appPath) {
   this.manifestPath = parts[0];
   this.entryPoint = parts[1] || '';
   this.appIndex = null;
+  this.appGaiaPath = null;
   var runner = this;
 
   // Walk through the config apps until we find one matching the current app
@@ -162,10 +163,12 @@ ColdLaunch.prototype.setApplicationMetadata = function(appPath) {
         if (runner.entryPoint) {
           if (runner.entryPoint === app[2]) {
             runner.appIndex = index;
+            runner.appGaiaPath = app[0];
             return false;
           }
         } else {
           runner.appIndex = index;
+          runner.appGaiaPath = app[0];
           return false;
         }
       }
@@ -179,7 +182,7 @@ ColdLaunch.prototype.setApplicationMetadata = function(appPath) {
 
   this.manifestURL = this.manifestPath + '.gaiamobile.org';
   this.manifest = this.requireManifest(path.join(
-    process.cwd(), 'apps', this.manifestPath, 'manifest.webapp'));
+    process.cwd(), this.appGaiaPath, this.manifestPath, 'manifest.webapp'));
   this.appName = this.entryPoint ?
     this.manifest.entry_points[this.entryPoint].name :
     this.manifest.name;
