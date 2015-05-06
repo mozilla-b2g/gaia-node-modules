@@ -134,7 +134,7 @@ Logging.prototype.memory = function(processName, application) {
   return new Command()
     .env('ANDROID_SERIAL', this.serial)
     .adbShell('b2g-info')
-    .pipe('grep "' + processName + '"')
+    .pipe('grep "' + processName.substr(0, 13) + '"')
     .exec()
     .then(function(output) {
       var parts = output.split(/\s+/g);
