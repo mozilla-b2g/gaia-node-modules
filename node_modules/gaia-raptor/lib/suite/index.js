@@ -1,3 +1,4 @@
+var fs = require('fs');
 var runners = {
   'cold': 'cold-launch',
   'reboot': 'reboot',
@@ -15,11 +16,26 @@ var runners = {
  * @constructor
  */
 var Suite = function(options) {
+  // Name is actually (a part of) path.
   var name = runners[options.phase];
-  var Runner = require('./' + name);
+  var path = name;
+  if (!fs.existsSync(path)) {
+    // If it's not a valid path, try to search it in default ones.
+    path = './' + path;
+  }
+  var Runner = require(path);
   var runner = new Runner(options);
 
   return runner;
+};
+
+/**
+ * Register a customized runner.
+ * @param {string} phase the phase name of the customized runner
+ * @param {path} path the path to the runner file
+ */
+Suite.registerRunner = function(phase, path) {
+  runners[phase] = path;
 };
 
 module.exports = Suite;
