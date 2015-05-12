@@ -15,7 +15,7 @@
     "ejs": "0.8.4",
     "empty-port": "~0.0.1",
     "fe.js": "~0.1.4",
-    "gaia-raptor": "1.5.0",
+    "gaia-raptor": "1.6.0",
     "grunt": "0.4.2",
     "grunt-contrib-clean": "0.5.0",
     "grunt-jsdoc": "0.5.1",
