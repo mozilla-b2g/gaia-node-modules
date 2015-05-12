@@ -51,6 +51,15 @@ var createRunner = function(options, callback) {
 };
 
 /**
+ * Register a customized runner.
+ * @param {string} phase the phase name of the customized runner
+ * @param {path} path the path to the runner file
+ */
+var registerRunner = function(phase, path) {
+  Suite.registerRunner(phase, path);
+};
+
+/**
  *
  * @param {object} options Suite options, e.g. appPath, runs, retries
  * @param {function} callback
@@ -66,6 +75,16 @@ var raptor = function(options, callback) {
 
   if (!options.time) {
     options.time = Date.now();
+  }
+
+  // If registering a new runner: { phase: String, path: ModulePath }.
+  // If registering a new runner there is no need to add 'phase' in options.
+  if (options.runner) {
+    var phase = options.runner.phase;
+    var path = options.runner.path;
+
+    Suite.registerRunner(phase, path);
+    options.phase = options.runner.phase;
   }
 
   // Skip parsing for application paths if our runner doesn't require it
