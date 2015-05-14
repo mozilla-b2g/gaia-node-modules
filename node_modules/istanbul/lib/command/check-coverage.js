@@ -14,6 +14,14 @@ var nopt = require('nopt'),
     Command = require('./index'),
     configuration = require('../config');
 
+function isAbsolute(file) {
+    if (path.isAbsolute) {
+        return path.isAbsolute(file);
+    }
+
+    return path.resolve(file) === path.normalize(file);
+}
+
 function CheckCoverageCommand() {
     Command.call(this);
 }
@@ -24,11 +32,15 @@ function removeFiles(covObj, root, files) {
 
     // Create lookup table.
     files.forEach(function (file) {
-        filesObj[path.join(root, file)] = true;
+        filesObj[file] = true;
     });
 
     Object.keys(covObj).forEach(function (key) {
-        if (filesObj[key] !== true) {
+        // Exclude keys will always be relative, but covObj keys can be absolute or relative
+        var excludeKey = isAbsolute(key) ? path.relative(root, key) : key;
+        // Also normalize for files that start with `./`, etc.
+        excludeKey = path.normalize(excludeKey);
+        if (filesObj[excludeKey] !== true) {
             obj[key] = covObj[key];
         }
     });
@@ -105,6 +117,9 @@ Command.mix(CheckCoverageCommand, {
             includes: [ includePattern ]
         }, function (err, files) {
             if (err) { throw err; }
+            if (files.length === 0) {
+               return callback('ERROR: No coverage files found.');
+            }
             files.forEach(function (file) {
                 var coverageObject = JSON.parse(fs.readFileSync(file, 'utf8'));
                 collector.add(coverageObject);
