@@ -1,7 +1,7 @@
-var debug = require('debug')('marionette-js-runner:hostmanager');
-
-var Promise = require('promise');
+var Logger = require('marionette-js-logger');
 var Marionette = require('marionette-client');
+var Promise = require('promise');
+var debug = require('debug')('marionette-js-runner:hostmanager');
 
 /**
  * @constructor
@@ -50,6 +50,10 @@ HostManager.prototype = {
 
     var client = new Marionette.Client(null, { lazy: true });
     var plugins = this.plugins;
+    var verbose = this.verbose;
+    if (verbose) {
+      this.addPlugin('logger', Logger);
+    }
 
     suiteSetup(function() {
       var ctx = this;
@@ -116,6 +120,13 @@ HostManager.prototype = {
             );
           }
 
+          if (verbose) {
+            client.logger.pollMessages();
+            client.logger.on('message', function(msg) {
+              console.log(JSON.stringify(msg));
+            });
+          }
+
           return new Promise(function(accept) {
             client.startSession(accept, desiredCapabilities);
           });
@@ -124,12 +135,15 @@ HostManager.prototype = {
 
     // turn off the client
     teardown(function() {
-      var deleteSession = Promise.denodeify(client.deleteSession.bind(client));
+      if (verbose) {
+        // Ensure all messages are drained before shutting down.
+        client.logger.grabLogMessages();
+      }
 
-      return deleteSession().
-        then(function() {
-          return session.destroy();
-        });
+      var deleteSession = Promise.denodeify(client.deleteSession.bind(client));
+      return deleteSession().then(function() {
+        return session.destroy();
+      });
     });
 
     suiteTeardown(function() {

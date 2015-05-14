@@ -1,10 +1,8 @@
 default: b2g node_modules
 
 b2g: node_modules
-	./node_modules/.bin/mozilla-download \
-		--product b2g \
-		--channel tinderbox \
-		--branch mozilla-central $@
+	./node_modules/.bin/mozilla-download --product b2g-desktop --branch mozilla-central .
+	touch b2g
 
 node_modules: package.json
 	npm install
