@@ -8,8 +8,6 @@ var RPC = require('./rpc');
 var uuid = require('uuid');
 
 var Consumer = require('mocha-json-proxy/consumer');
-var Logger = require('marionette-js-logger');
-var Marionette = require('marionette-client');
 var Promise = require('promise');
 
 var emptyPort = Promise.denodeify(require('empty-port'));
@@ -41,19 +39,12 @@ RemoteBuilder.prototype = {
 function RemoteHost(runner, instance) {
   this.runner = runner;
   this.instance = instance;
-  // marionette-js-logger interface (optional)
-  this.logger = null;
 }
 
 RemoteHost.prototype = {
   $rpc: { methods: ['destroy', 'createSession'] },
 
   destroy: function() {
-    // Cleanup logger if it was turned on...
-    if (this.logger) {
-      this.logger.close();
-    }
-
     return this.instance.destroy().then(function() {
       // Removal _must_ be async otherwise this can mess up iteration (forEach).
       var idx = this.runner.hosts.indexOf(this);
@@ -70,40 +61,11 @@ RemoteHost.prototype = {
       options.port = profileConfig.port;
     }
 
-    var session = this.runner.host.module.createSession(
+    return this.runner.host.module.createSession(
       this.instance,
       profileConfig.profile,
       options
     );
-
-    if (!this.runner.verbose) {
-      return session;
-    }
-
-    var driver = new Marionette.Drivers.Tcp({ port: profileConfig.port });
-    var connect = Promise.denodeify(driver.connect.bind(driver));
-    var client, startSession, deleteSession, result;
-    return session.
-      then(function(_result) {
-        result = _result;
-        return connect();
-      })
-      .then(function() {
-        client = new Marionette.Client(driver);
-        startSession = Promise.denodeify(client.startSession.bind(client));
-        deleteSession = Promise.denodeify(client.deleteSession.bind(client));
-
-        client.plugin('logger', Logger);
-
-        return startSession();
-      })
-      .then(function() {
-        this.logger = client.logger;
-        return deleteSession();
-      }.bind(this))
-      .then(function() {
-        return result;
-      });
   }
 };
 
@@ -260,6 +222,8 @@ Runner.prototype = {
       options.env.DESIRED_CAPABILITIES =
         this._encode(this.desiredCapabilities);
     }
+
+    options.env.VERBOSE = this._encode(this.verbose ? '1' : '0');
 
     this.process = fork(MOCHA_BINARY, argv, options);
     this.mochaRunnerProxy = new Consumer(this.process);

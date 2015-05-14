@@ -130,6 +130,7 @@ module.exports = function(suite) {
      */
     // Setup global state manager for the marionette runtime.
     manager.desiredCapabilities = decode('DESIRED_CAPABILITIES');
+    manager.verbose = decode('VERBOSE') === '1';
     context.marionette._manager = manager;
     context.marionette.client = manager.createHost.bind(manager);
     context.marionette.plugin = manager.addPlugin.bind(manager);
