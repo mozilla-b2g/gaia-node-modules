@@ -1,6 +1,0 @@
-language: python
-before_install:
-  - "sudo easy_install http://closure-linter.googlecode.com/files/closure_linter-latest.tar.gz"
-script: "./test/ci.sh"
-python:
-  - "2.7"
